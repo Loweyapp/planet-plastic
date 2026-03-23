@@ -1,12 +1,12 @@
 {
-  "name": "Paint Adviser",
-  "short_name": "Paints",
-  "description": "Scale model paint inventory matcher",
-  "start_url": "/",
+  "name": "Planet Plastic",
+  "short_name": "Planet Plastic",
+  "description": "Scale modelling paint matcher and build adviser",
+  "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#0f0f0d",
   "theme_color": "#0f0f0d",
-  "orientation": "portrait-primary",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "icon-192.png",
