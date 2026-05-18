@@ -13,432 +13,279 @@
 <link rel="icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Google+Sans+Text:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #f1f3f4;
-    --surface: #ffffff;
-    --border: #e0e0e0;
-    --text: #202124;
-    --text2: #5f6368;
-    --text3: #9aa0a6;
-    --accent: #1a73e8;
-    --accent-light: #e8f0fe;
-    --user-bubble: #1a73e8;
-    --ai-bubble: #ffffff;
-    --sans: 'Google Sans Text', 'Segoe UI', system-ui, sans-serif;
-    --display: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-  }
+:root {
+  --bg: #f1f3f4;
+  --surface: #ffffff;
+  --border: #e0e0e0;
+  --text: #202124;
+  --text2: #5f6368;
+  --text3: #9aa0a6;
+  --accent: #1a73e8;
+  --accent-light: #e8f0fe;
+  --user-bubble: #1a73e8;
+  --ai-bubble: #ffffff;
+  --sans: 'Google Sans Text', 'Segoe UI', system-ui, sans-serif;
+  --display: 'Google Sans', 'Segoe UI', system-ui, sans-serif;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overscroll-behavior: none; -webkit-font-smoothing: antialiased; }
 
-  html, body {
-    height: 100%;
-    overscroll-behavior: none;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  overflow: hidden;
+}
 
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--sans);
-    display: flex;
-    flex-direction: column;
-    height: 100dvh;
-    overflow: hidden;
-  }
+/* ── SETUP SCREEN ── */
+#setup-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: 40px 24px calc(40px + var(--safe-bottom));
+  background: var(--bg);
+}
+.setup-logo { font-family: var(--display); font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 6px; letter-spacing: -0.01em; }
+.setup-logo span { color: var(--accent); }
+.setup-tagline { font-size: 14px; color: var(--text2); margin-bottom: 32px; }
+.setup-card { background: var(--surface); border-radius: 12px; padding: 28px 24px; width: 100%; max-width: 380px; box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08); }
+.setup-card-title { font-family: var(--display); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.setup-card-desc { font-size: 13px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+.setup-card-desc a { color: var(--accent); text-decoration: none; }
+.setup-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; display: block; }
+.setup-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--sans); font-size: 14px; padding: 12px 14px; outline: none; transition: border-color 0.15s, box-shadow 0.15s; margin-bottom: 14px; }
+.setup-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,115,232,0.2); }
+.setup-input::placeholder { color: var(--text3); }
+.setup-btn { width: 100%; background: var(--accent); border: none; border-radius: 8px; color: #fff; font-family: var(--display); font-size: 14px; font-weight: 500; padding: 13px; cursor: pointer; transition: box-shadow 0.15s; }
+.setup-btn:active { box-shadow: 0 2px 8px rgba(26,115,232,0.4); }
+.setup-error { font-size: 12px; color: #d93025; margin-top: 10px; display: none; }
 
-  /* ── SETUP SCREEN ── */
-  #setup-screen {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    flex: 1;
-    padding: 40px 24px calc(40px + var(--safe-bottom));
-    background: var(--bg);
-  }
+/* ── MAIN APP ── */
+#app-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
 
-  .setup-logo {
-    font-family: var(--display);
-    font-size: 26px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-    letter-spacing: -0.01em;
-  }
+/* Header */
+.header { background: var(--surface); padding: 0 20px; padding-top: var(--safe-top); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.header-top { display: flex; align-items: center; height: 56px; }
+.header-wordmark { font-family: var(--display); font-size: 18px; font-weight: 700; color: var(--text); flex: 1; letter-spacing: -0.01em; }
+.header-wordmark span { color: var(--accent); }
+.icon-btn { background: transparent; border: none; color: var(--text2); cursor: pointer; width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
+.icon-btn:active { background: var(--bg); }
+.icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
 
-  .setup-logo span { color: var(--accent); }
+/* Search bar (adviser only) */
+.search-bar { padding: 10px 0 14px; }
+.search-inner { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 0 16px 0 14px; gap: 10px; transition: box-shadow 0.15s, border-color 0.15s; }
+.search-inner:focus-within { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(26,115,232,0.15); background: var(--surface); }
+.search-icon { width: 18px; height: 18px; fill: var(--text3); flex-shrink: 0; }
+.search-inner textarea { flex: 1; background: transparent; border: none; color: var(--text); font-family: var(--sans); font-size: 15px; line-height: 1.5; padding: 10px 0; resize: none; outline: none; min-height: 40px; max-height: 112px; display: block; }
+.search-inner textarea::placeholder { color: var(--text3); }
+.send-btn { width: 34px; height: 34px; background: var(--accent); border: none; border-radius: 50%; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: opacity 0.15s; }
+.send-btn:active { opacity: 0.8; }
+.send-btn:disabled { background: var(--border); }
+.send-btn svg { width: 16px; height: 16px; fill: currentColor; margin-left: 2px; }
 
-  .setup-tagline {
-    font-size: 14px;
-    color: var(--text2);
-    margin-bottom: 32px;
-  }
+/* Chat area */
+.chat-area { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 16px; }
+.chat-area::-webkit-scrollbar { display: none; }
 
-  .setup-card {
-    background: var(--surface);
-    border-radius: 12px;
-    padding: 28px 24px;
-    width: 100%;
-    max-width: 380px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08);
-  }
+/* Message bubbles */
+.message-row { display: flex; margin-bottom: 8px; animation: fadeUp 0.18s ease; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.message-row.user { justify-content: flex-end; }
+.message-row.assistant { justify-content: flex-start; }
+.bubble { max-width: 84%; padding: 10px 14px; font-size: 14px; line-height: 1.65; border-radius: 18px; word-break: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+.message-row.user .bubble { background: var(--user-bubble); color: #fff; border-bottom-right-radius: 4px; }
+.message-row.assistant .bubble { background: var(--ai-bubble); color: var(--text); border-bottom-left-radius: 4px; border: 1px solid var(--border); box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.bubble p { margin-bottom: 6px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble strong { font-weight: 500; }
+.message-row.user .bubble strong { color: #fff; }
 
-  .setup-card-title {
-    font-family: var(--display);
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 6px;
-  }
+/* Typing indicator */
+.typing-row { display: flex; justify-content: flex-start; margin-bottom: 8px; }
+.typing-bubble { background: var(--ai-bubble); border: 1px solid var(--border); border-radius: 18px; border-bottom-left-radius: 4px; padding: 12px 16px; display: flex; gap: 4px; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+.typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text3); animation: typingPulse 1.2s ease infinite; }
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingPulse { 0%, 60%, 100% { opacity: 0.35; transform: scale(1); } 30% { opacity: 1; transform: scale(1.25); } }
 
-  .setup-card-desc {
-    font-size: 13px;
-    color: var(--text2);
-    line-height: 1.6;
-    margin-bottom: 20px;
-  }
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  display: flex;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  padding-bottom: var(--safe-bottom);
+  flex-shrink: 0;
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+  gap: 3px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text3);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-weight: 500;
+  transition: color 0.15s;
+  min-height: 56px;
+}
+.nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+.nav-item.active { color: var(--accent); }
 
-  .setup-card-desc a { color: var(--accent); text-decoration: none; }
+/* ── VIEWS ── */
+.view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.view.active { display: flex; }
+.view-scroll { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.view-scroll::-webkit-scrollbar { display: none; }
+.view-pad { padding: 16px; }
 
-  .setup-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text2);
-    margin-bottom: 6px;
-    display: block;
-  }
+/* ── KIT PICKER ── */
+.picker-section { margin-bottom: 20px; }
+.picker-label { font-size: 12px; font-weight: 500; color: var(--text2); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+.chip-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  padding: 7px 14px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text2);
+  cursor: pointer;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+.chip.selected { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.pick-btn {
+  width: 100%;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  font-family: var(--display);
+  font-size: 15px;
+  font-weight: 500;
+  padding: 14px;
+  cursor: pointer;
+  margin-top: 4px;
+  transition: opacity 0.15s;
+}
+.pick-btn:disabled { opacity: 0.5; cursor: default; }
+.pick-btn:active { opacity: 0.85; }
+.kit-card {
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 18px;
+  margin-top: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  animation: fadeUp 0.2s ease;
+}
+.kit-card-name { font-family: var(--display); font-size: 17px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.kit-card-meta { font-size: 12px; color: var(--text3); margin-bottom: 12px; }
+.kit-card-reason { font-size: 14px; color: var(--text2); line-height: 1.6; margin-bottom: 12px; }
+.kit-card-row { font-size: 13px; color: var(--text); line-height: 1.5; margin-bottom: 6px; }
+.kit-card-row strong { font-weight: 500; color: var(--text2); }
+.difficulty-pips { display: flex; gap: 4px; align-items: center; margin-top: 10px; }
+.pip { width: 10px; height: 10px; border-radius: 50%; background: var(--border); }
+.pip.filled { background: var(--accent); }
+.no-stash-msg { text-align: center; padding: 40px 20px; color: var(--text2); font-size: 14px; line-height: 1.6; }
 
-  .setup-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    padding: 12px 14px;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    margin-bottom: 14px;
-  }
+/* ── MY PAINTS ── */
+.paints-search-wrap { padding: 12px 16px 8px; background: var(--surface); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.paints-search { display: flex; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 24px; padding: 0 14px; gap: 8px; }
+.paints-search:focus-within { border-color: var(--accent); }
+.paints-search input { flex: 1; background: transparent; border: none; font-family: var(--sans); font-size: 14px; color: var(--text); padding: 9px 0; outline: none; }
+.paints-search input::placeholder { color: var(--text3); }
+.paints-search svg { width: 16px; height: 16px; fill: var(--text3); flex-shrink: 0; }
+.paints-filter-row { display: flex; gap: 8px; overflow-x: auto; padding: 8px 16px 10px; flex-shrink: 0; }
+.paints-filter-row::-webkit-scrollbar { display: none; }
+.filter-chip { background: var(--surface); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--text2); cursor: pointer; white-space: nowrap; font-family: var(--sans); }
+.filter-chip.active { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+.paint-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.paint-list::-webkit-scrollbar { display: none; }
+.paint-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--bg);
+  background: var(--surface);
+}
+.paint-swatch { width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.1); }
+.paint-info { flex: 1; min-width: 0; }
+.paint-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.paint-meta { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.paint-qty { font-size: 13px; color: var(--text3); flex-shrink: 0; font-weight: 500; }
+.paints-count { font-size: 12px; color: var(--text3); text-align: center; padding: 10px; }
 
-  .setup-input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(26,115,232,0.2);
-  }
+/* ── COLLECTION ── */
+.coll-sub-tabs { display: flex; padding: 0 16px; gap: 0; border-bottom: 1px solid var(--border); background: var(--surface); flex-shrink: 0; overflow-x: auto; }
+.coll-sub-tabs::-webkit-scrollbar { display: none; }
+.sub-tab { flex-shrink: 0; padding: 12px 14px 10px; font-size: 13px; font-weight: 500; color: var(--text3); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; background: none; border-top: none; border-left: none; border-right: none; font-family: var(--sans); white-space: nowrap; }
+.sub-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.coll-toolbar { display: flex; gap: 8px; padding: 10px 16px; align-items: center; flex-shrink: 0; }
+.coll-search { flex: 1; display: flex; align-items: center; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 0 12px; gap: 8px; }
+.coll-search:focus-within { border-color: var(--accent); }
+.coll-search input { flex: 1; border: none; background: transparent; font-family: var(--sans); font-size: 13px; color: var(--text); padding: 8px 0; outline: none; }
+.coll-search input::placeholder { color: var(--text3); }
+.coll-search svg { width: 15px; height: 15px; fill: var(--text3); flex-shrink: 0; }
+.import-btn { background: var(--accent); border: none; border-radius: 20px; color: #fff; font-family: var(--display); font-size: 12px; font-weight: 500; padding: 8px 14px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+.kit-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+.kit-list::-webkit-scrollbar { display: none; }
+.kit-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--bg);
+  background: var(--surface);
+}
+.kit-thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background: var(--bg);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+.kit-item-info { flex: 1; min-width: 0; }
+.kit-item-name { font-size: 14px; font-weight: 500; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.kit-item-meta { font-size: 12px; color: var(--text3); margin-top: 2px; }
+.kit-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.kit-action-btn { background: var(--bg); border: none; border-radius: 6px; padding: 5px 8px; font-family: var(--sans); font-size: 11px; color: var(--text2); cursor: pointer; white-space: nowrap; }
+.kit-action-btn:active { background: var(--border); }
+.coll-empty { text-align: center; padding: 48px 24px; color: var(--text3); font-size: 14px; line-height: 1.7; }
+.coll-empty strong { display: block; font-size: 16px; color: var(--text2); margin-bottom: 6px; font-family: var(--display); }
+.coll-count { font-size: 12px; color: var(--text3); text-align: center; padding: 8px; }
 
-  .setup-input::placeholder { color: var(--text3); }
-
-  .setup-btn {
-    width: 100%;
-    background: var(--accent);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-family: var(--display);
-    font-size: 14px;
-    font-weight: 500;
-    padding: 13px;
-    cursor: pointer;
-    transition: box-shadow 0.15s;
-  }
-
-  .setup-btn:active { box-shadow: 0 2px 8px rgba(26,115,232,0.4); }
-
-  .setup-error {
-    font-size: 12px;
-    color: #d93025;
-    margin-top: 10px;
-    display: none;
-  }
-
-  /* ── MAIN APP ── */
-  #app-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
-
-  /* Header */
-  .header {
-    background: var(--surface);
-    padding: 0 20px;
-    padding-top: var(--safe-top);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .header-top {
-    display: flex;
-    align-items: center;
-    height: 56px;
-  }
-
-  .header-wordmark {
-    font-family: var(--display);
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--text);
-    flex: 1;
-    letter-spacing: -0.01em;
-  }
-
-  .header-wordmark span { color: var(--accent); }
-
-  .icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--text2);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.15s;
-  }
-
-  .icon-btn:active { background: var(--bg); }
-  .icon-btn svg { width: 20px; height: 20px; fill: currentColor; }
-
-  /* Search bar under header */
-  .search-bar {
-    padding: 10px 0 14px;
-  }
-
-  .search-inner {
-    display: flex;
-    align-items: center;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 0 16px 0 14px;
-    gap: 10px;
-    transition: box-shadow 0.15s, border-color 0.15s;
-  }
-
-  .search-inner:focus-within {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(26,115,232,0.15);
-    background: var(--surface);
-  }
-
-  .search-icon {
-    width: 18px;
-    height: 18px;
-    fill: var(--text3);
-    flex-shrink: 0;
-  }
-
-  .search-inner textarea {
-    flex: 1;
-    background: transparent;
-    border: none;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 15px;
-    line-height: 1.5;
-    padding: 10px 0;
-    resize: none;
-    outline: none;
-    min-height: 40px;
-    max-height: 112px;
-    display: block;
-  }
-
-  .search-inner textarea::placeholder { color: var(--text3); }
-
-  .send-btn {
-    width: 34px;
-    height: 34px;
-    background: var(--accent);
-    border: none;
-    border-radius: 50%;
-    color: #fff;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: opacity 0.15s;
-  }
-
-  .send-btn:active { opacity: 0.8; }
-  .send-btn:disabled { background: var(--border); }
-  .send-btn svg { width: 16px; height: 16px; fill: currentColor; margin-left: 2px; }
-
-  /* Chat area */
-  .chat-area {
-    flex: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 16px 16px 16px;
-  }
-
-  .chat-area::-webkit-scrollbar { display: none; }
-
-  /* Message bubbles */
-  .message-row {
-    display: flex;
-    margin-bottom: 8px;
-    animation: fadeUp 0.18s ease;
-  }
-
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: none; }
-  }
-
-  .message-row.user { justify-content: flex-end; }
-  .message-row.assistant { justify-content: flex-start; }
-
-  .bubble {
-    max-width: 84%;
-    padding: 10px 14px;
-    font-size: 14px;
-    line-height: 1.65;
-    border-radius: 18px;
-    word-break: break-word;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  }
-
-  .message-row.user .bubble {
-    background: var(--user-bubble);
-    color: #fff;
-    border-bottom-right-radius: 4px;
-  }
-
-  .message-row.assistant .bubble {
-    background: var(--ai-bubble);
-    color: var(--text);
-    border-bottom-left-radius: 4px;
-    border: 1px solid var(--border);
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-
-  .bubble p { margin-bottom: 6px; }
-  .bubble p:last-child { margin-bottom: 0; }
-  .bubble strong { font-weight: 500; }
-  .message-row.user .bubble strong { color: #fff; }
-
-  /* Typing indicator */
-  .typing-row {
-    display: flex;
-    justify-content: flex-start;
-    margin-bottom: 8px;
-  }
-
-  .typing-bubble {
-    background: var(--ai-bubble);
-    border: 1px solid var(--border);
-    border-radius: 18px;
-    border-bottom-left-radius: 4px;
-    padding: 12px 16px;
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
-  }
-
-  .typing-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text3);
-    animation: typingPulse 1.2s ease infinite;
-  }
-
-  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes typingPulse {
-    0%, 60%, 100% { opacity: 0.35; transform: scale(1); }
-    30% { opacity: 1; transform: scale(1.25); }
-  }
-
-  /* ── SETTINGS SHEET ── */
-  #settings-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    z-index: 100;
-    align-items: flex-end;
-  }
-
-  #settings-overlay.open { display: flex; }
-
-  .settings-sheet {
-    background: var(--surface);
-    border-radius: 20px 20px 0 0;
-    width: 100%;
-    padding: 20px 24px calc(24px + var(--safe-bottom));
-    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
-  }
-
-  .settings-handle {
-    width: 36px;
-    height: 4px;
-    background: var(--border);
-    border-radius: 2px;
-    margin: 0 auto 20px;
-  }
-
-  .settings-title {
-    font-family: var(--display);
-    font-size: 16px;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 16px;
-  }
-
-  .settings-label {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--text2);
-    margin-bottom: 6px;
-    display: block;
-  }
-
-  .settings-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: var(--sans);
-    font-size: 14px;
-    padding: 11px 12px;
-    outline: none;
-    margin-bottom: 12px;
-  }
-
-  .settings-input:focus { border-color: var(--accent); }
-
-  .settings-save {
-    width: 100%;
-    background: var(--accent);
-    border: none;
-    border-radius: 8px;
-    color: #fff;
-    font-family: var(--display);
-    font-size: 14px;
-    font-weight: 500;
-    padding: 13px;
-    cursor: pointer;
-    margin-bottom: 10px;
-  }
-
-  .settings-clear {
-    width: 100%;
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text2);
-    font-family: var(--sans);
-    font-size: 14px;
-    padding: 11px;
-    cursor: pointer;
-  }
+/* ── SETTINGS SHEET ── */
+#settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: flex-end; }
+#settings-overlay.open { display: flex; }
+.settings-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; padding: 20px 24px calc(24px + var(--safe-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); }
+.settings-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+.settings-title { font-family: var(--display); font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 16px; }
+.settings-label { font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 6px; display: block; }
+.settings-input { width: 100%; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: var(--sans); font-size: 14px; padding: 11px 12px; outline: none; margin-bottom: 12px; }
+.settings-input:focus { border-color: var(--accent); }
+.settings-save { width: 100%; background: var(--accent); border: none; border-radius: 8px; color: #fff; font-family: var(--display); font-size: 14px; font-weight: 500; padding: 13px; cursor: pointer; margin-bottom: 10px; }
+.settings-clear { width: 100%; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--text2); font-family: var(--sans); font-size: 14px; padding: 11px; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -446,10 +293,10 @@
 <!-- SETUP SCREEN -->
 <div id="setup-screen">
   <div class="setup-logo">Planet <span>Plastic</span></div>
-  <div class="setup-tagline">Your modelling paint adviser</div>
+  <div class="setup-tagline">Your modelling companion</div>
   <div class="setup-card">
     <div class="setup-card-title">Get started</div>
-    <p class="setup-card-desc">Enter your Anthropic API key to use the adviser. Get one free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Stored only on your device.</p>
+    <p class="setup-card-desc">Enter your Anthropic API key. Get one free at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>. Stored only on your device.</p>
     <label class="setup-label" for="api-key-input">API key</label>
     <input class="setup-input" type="password" id="api-key-input" placeholder="sk-ant-..." autocomplete="off" autocorrect="off" spellcheck="false">
     <button class="setup-btn" onclick="saveKey()">Get started</button>
@@ -461,17 +308,16 @@
 <div id="app-screen">
   <div class="header">
     <div class="header-top">
-      <div class="header-wordmark">Planet <span>Plastic</span></div>
+      <div class="header-wordmark" id="header-wordmark">Planet <span>Plastic</span></div>
       <button class="icon-btn" onclick="openSettings()" title="Settings">
         <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-1l2.16-1.68c.19-.15.24-.42.12-.64l-2.04-3.54c-.12-.22-.39-.3-.61-.22l-2.55 1.02c-.53-.4-1.09-.73-1.71-.98l-.38-2.71C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.71c-.62.25-1.18.58-1.71.98L4.87 5.09c-.22-.08-.49 0-.61.22L2.22 8.85c-.12.22-.07.49.12.64L4.5 11.17c-.04.34-.07.67-.07 1s.03.65.07.98L2.34 14.83c-.19.15-.24.42-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.53.4 1.09.73 1.71.98l.38 2.71c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.71c.62-.25 1.18-.58 1.71-.98l2.55 1.02c.22.08.49 0 .61-.22l2.04-3.54c.12-.22.07-.49-.12-.64l-2.16-1.66z"/></svg>
       </button>
     </div>
-    <div class="search-bar">
+    <!-- Adviser search bar (only shown on Adviser tab) -->
+    <div class="search-bar" id="adviser-search-bar">
       <div class="search-inner">
         <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <textarea id="msg-input" placeholder="Ask about paints..." rows="1"
-          oninput="autoResize(this)"
-          onkeydown="handleKey(event)"></textarea>
+        <textarea id="msg-input" placeholder="Ask about paints..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
         <button class="send-btn" id="send-btn" onclick="sendMessage()">
           <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
         </button>
@@ -479,7 +325,114 @@
     </div>
   </div>
 
-  <div class="chat-area" id="chat-area"></div>
+  <!-- ADVISER VIEW -->
+  <div class="view active" id="view-adviser">
+    <div class="chat-area" id="chat-area"></div>
+  </div>
+
+  <!-- KIT PICKER VIEW -->
+  <div class="view" id="view-picker">
+    <div class="view-scroll">
+      <div class="view-pad">
+        <div class="picker-section">
+          <div class="picker-label">How are you feeling?</div>
+          <div class="chip-row" id="chips-mood">
+            <button class="chip" onclick="selectChip(this,'mood')">Focused</button>
+            <button class="chip" onclick="selectChip(this,'mood')">Quick win</button>
+            <button class="chip" onclick="selectChip(this,'mood')">Something new</button>
+            <button class="chip" onclick="selectChip(this,'mood')">Challenging</button>
+            <button class="chip" onclick="selectChip(this,'mood')">Relaxed</button>
+          </div>
+        </div>
+        <div class="picker-section">
+          <div class="picker-label">Genre</div>
+          <div class="chip-row" id="chips-genre">
+            <button class="chip" onclick="selectChip(this,'genre')">Any</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Aircraft</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Armour</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Sci-Fi</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Cars</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Ships</button>
+            <button class="chip" onclick="selectChip(this,'genre')">Figures</button>
+          </div>
+        </div>
+        <div class="picker-section">
+          <div class="picker-label">Scale</div>
+          <div class="chip-row" id="chips-scale">
+            <button class="chip" onclick="selectChip(this,'scale')">Any</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:144</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:72</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:48</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:35</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:32</button>
+            <button class="chip" onclick="selectChip(this,'scale')">1:24</button>
+          </div>
+        </div>
+        <button class="pick-btn" id="pick-btn" onclick="pickKit()" disabled>Pick a kit for me</button>
+        <div id="kit-result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MY PAINTS VIEW -->
+  <div class="view" id="view-paints">
+    <div class="paints-search-wrap">
+      <div class="paints-search">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="paints-search-input" placeholder="Search paints..." oninput="renderPaints()">
+      </div>
+    </div>
+    <div class="paints-filter-row" id="paints-filter-row">
+      <button class="filter-chip active" onclick="setPaintFilter(this,'All')">All</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Tamiya')">Tamiya</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Vallejo')">Vallejo</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Paint')">Paints</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Weathering')">Weathering</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Primer')">Primer</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Varnish')">Varnish</button>
+      <button class="filter-chip" onclick="setPaintFilter(this,'Thinner')">Thinner</button>
+    </div>
+    <div class="paint-list" id="paint-list"></div>
+  </div>
+
+  <!-- COLLECTION VIEW -->
+  <div class="view" id="view-collection">
+    <div class="coll-sub-tabs">
+      <button class="sub-tab active" onclick="setCollTab(this,'stash')">Stash</button>
+      <button class="sub-tab" onclick="setCollTab(this,'wip')">In Progress</button>
+      <button class="sub-tab" onclick="setCollTab(this,'done')">Completed</button>
+      <button class="sub-tab" onclick="setCollTab(this,'wish')">Wishlist</button>
+    </div>
+    <div class="coll-toolbar">
+      <div class="coll-search">
+        <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="coll-search-input" placeholder="Search kits..." oninput="renderCollection()">
+      </div>
+      <button class="import-btn" onclick="triggerImport()">Import CSV</button>
+    </div>
+    <div class="kit-list" id="kit-list"></div>
+    <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="handleCSVImport(event)">
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="switchTab('adviser')" id="nav-adviser">
+      <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+      Adviser
+    </button>
+    <button class="nav-item" onclick="switchTab('picker')" id="nav-picker">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg>
+      Picker
+    </button>
+    <button class="nav-item" onclick="switchTab('paints')" id="nav-paints">
+      <svg viewBox="0 0 24 24"><path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3zm13.71-9.37l-1.34-1.34a1 1 0 00-1.41 0L9 12.25 11.75 15l8.96-8.96a1 1 0 000-1.41z"/></svg>
+      Paints
+    </button>
+    <button class="nav-item" onclick="switchTab('collection')" id="nav-collection">
+      <svg viewBox="0 0 24 24"><path d="M20 6h-2.18c.07-.44.18-.86.18-1.3C18 2.57 15.43 0 12.27 0c-2.04 0-3.6 1.06-4.6 2.66L7 3.48l-.67-1.11C5.33 1.06 3.77 0 1.73 0-1.43 0-4 2.57-4 5.7c0 .44.11.86.18 1.3H4c-1.1 0-2 .9-2 2v11c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-7.73-4c1.15 0 2.1.8 2.1 2.07 0 .56-.23 1.12-.67 1.57L12 7.46 9.3 5.64c-.44-.45-.67-1.01-.67-1.57 0-1.27.95-2.07 2.1-2.07z"/></svg>
+      Collection
+    </button>
+  </nav>
 </div>
 
 <!-- SETTINGS SHEET -->
@@ -494,38 +447,49 @@
   </div>
 </div>
 
-    <button class="settings-clear" onclick="clearConversation()">Clear conversation</button>
-  </div>
-</div>
-
 <script>
-const INVENTORY = [{"Category":"Thinner","Brand":"Abteilung 502","Range":"Max Effect Thinner","Code":"ABT112","Product Name":"Max Effect Thinner","Finish":"N/A","Base Type":"Oil","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT005","Product Name":"Smoke","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT010","Product Name":"Yellow","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT020","Product Name":"Faded Dark Yellow","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT030","Product Name":"Faded Navy Blue","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT040","Product Name":"Faded Green","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT240","Product Name":"Cream Brown","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT500","Product Name":"Gundam Blue","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT505","Product Name":"Coagulated Blood","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT510","Product Name":"Starship Filth","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT515","Product Name":"Turquoise Lights","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT520","Product Name":"Dead Flesh","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT525","Product Name":"Ghost Grey","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Paint","Brand":"AK","Range":"Acrylic Modeling","Code":"AK11056","Product Name":"Dark Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Interactive","Code":"AK3012","Product Name":"Light Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Interactive","Code":"AK3013","Product Name":"Highlight Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK477","Product Name":"Chrome","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK479","Product Name":"Aluminium","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK486","Product Name":"Jet Exhaust","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK670","Product Name":"Stainless Steel","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"AK","Range":"Primer","Code":"AK11242","Product Name":"Black Primer","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"AK","Range":"Primer","Code":"AK11242","Product Name":"Black Primer","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"AK","Range":"Wet Effects","Code":"AK079","Product Name":"Wet Effects Fluid","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Effects","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"AK Interactive","Range":"Wet Effects","Code":"AK079","Product Name":"Wet Effects Fluid","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Effects","Quantity":1,"Notes":null},{"Category":"Masking","Brand":"Ammo by Mig","Range":"Liquid Mask","Code":"A.MIG-2032","Product Name":"Liquid Mask","Finish":"N/A","Base Type":"Latex","Usage Tag":"Masking","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Enamel Wash","Code":"A.MIG-1009","Product Name":"Starship Wash","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Panel Line Wash","Code":"A.MIG-1600","Product Name":"PLW Light Grey","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Panel Line Wash","Code":"A.MIG-1605","Product Name":"PLW","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX001","Product Name":"1975 Reefer White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX004","Product Name":"Light Grime","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX011","Product Name":"1975 Engine Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX042","Product Name":"1975 SP Lettering Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Archive-X","Range":"Archive-X","Code":"AXAT30","Product Name":"Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"DecoArt","Range":"Crafters Acrylic","Code":null,"Product Name":"Silver Morning","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Art acrylic"},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Satin Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Flat Varnish","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Gloss Varnish","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Light Wash","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Dark Dirt","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":2,"Notes":"One nearly empty"},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Rust","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Generic","Range":"Water","Code":null,"Product Name":"Water","Finish":"N/A","Base Type":"Water","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Generic","Range":"White Spirit","Code":null,"Product Name":"White Spirit","Finish":"N/A","Base Type":"Solvent","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Green Stuff World","Range":"Acrylic","Code":"1843","Product Name":"Ivory Tusk","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A009","Product Name":"Dark Earth","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A016","Product Name":"Dark Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A025","Product Name":"Interior Grey-Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A026","Product Name":"Sky \"Type S\"","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A032","Product Name":"Ocean Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A034","Product Name":"Medium Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C015","Product Name":"Black-Green RLM70","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C017","Product Name":"Dark Green RLM71","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C023","Product Name":"Grey RLM02","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C029","Product Name":"Light Blue RLM65","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C031","Product Name":"Gunship Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C032","Product Name":"Ocean Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C034","Product Name":"Medium Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C040","Product Name":"Black-Grey RLM66","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C047","Product Name":"Soviet Cockpit Blue-Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C066","Product Name":"Insignia (Orange) Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C101","Product Name":"Traffic White (RAL 9016)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C227","Product Name":"Dark Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C228","Product Name":"Medium Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C229","Product Name":"Light Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"IPA","Range":"Isopropyl Alcohol","Code":"99%","Product Name":"IPA 99%","Finish":"N/A","Base Type":"Alcohol","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Cleaner","Brand":"Iwata","Range":"Airbrush Cleaner","Code":null,"Product Name":"Iwata Airbrush Cleaner","Finish":"N/A","Base Type":"Cleaner","Usage Tag":"Airbrush Maintenance","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Set","Code":"MI-1","Product Name":"Micro Set","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Set","Code":"MI-1","Product Name":"Micro Set","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Sol","Code":"MI-2","Product Name":"Micro Sol","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Sol","Code":"MI-2","Product Name":"Micro Sol","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"MIG/Ammo","Range":"PLW","Code":"A.MIG-1600","Product Name":"PLW Light Grey","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Gundam Builders","Code":"GB24","Product Name":"Trans-Am Red Pearl","Finish":"Pearl","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Gundam Builders","Code":"GB25","Product Name":"Trans-Am Highlight Red","Finish":"Gloss","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Metallic GX","Code":"GX215","Product Name":"Metal Bloody Red","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H17","Product Name":"Cocoa Brown","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H25","Product Name":"Sky Blue","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H46","Product Name":"Emerald Green","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Gundam","Code":"HG01","Product Name":"RX-78-2 Gundam White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Metallic","Code":"MC217","Product Name":"Gold","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Color Gundam","Code":"UG05","Product Name":"UNT’s MS Grey","Finish":"Matt","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Color Gundam","Code":"UG15","Product Name":"MS Phantom Grey","Finish":"Matt","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Mr Hobby","Range":"Mr Finishing Surfacer 1500","Code":null,"Product Name":"Mr Finishing Surfacer 1500 Grey","Finish":"Primer","Base Type":"Lacquer","Usage Tag":"Surface Prep","Quantity":4,"Notes":null},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Rapid Thinner","Code":null,"Product Name":"Mr Color Rapid Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Half bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Rapid Thinner","Code":null,"Product Name":"Mr Color Rapid Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Half bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Mr Color Thinner","Code":"250","Product Name":"Mr Color Thinner 250","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Nearly empty"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Mr Color Thinner","Code":"250","Product Name":"Mr Color Thinner 250","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Nearly empty"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Leveling Thinner","Code":"400","Product Name":"Mr Color Leveling Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Full bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Leveling Thinner","Code":"400","Product Name":"Mr Color Leveling Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Full bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Leveling Thinner","Code":"small","Product Name":"Mr Color Leveling Thinner (small)","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Small bottle"},{"Category":"Varnish","Brand":"Pledge","Range":"Floor Polish","Code":null,"Product Name":"Pledge Floor Wax","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Pébéo","Range":"Studio Acrylic","Code":"41","Product Name":"White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Art acrylic"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"06","Product Name":"Tar Black","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"09","Product Name":"Anthracite","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"12","Product Name":"Gloss Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"15","Product Name":"Flat Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"301","Product Name":"White","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"310","Product Name":"Lufthansa Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"330","Product Name":"Fiery Red","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"360","Product Name":"Fern Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"361","Product Name":"Olive Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"364","Product Name":"Leaf Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"374","Product Name":"Grey (RAL 7001)","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"378","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"51","Product Name":"Light Blue","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"52","Product Name":"Blue","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"57","Product Name":"Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"67","Product Name":"Greenish Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"74","Product Name":"Gunship Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"79","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"86","Product Name":"Olive Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"87","Product Name":"Stone Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"91","Product Name":"Dark Brown","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Thinner","Brand":"Revell","Range":"Color Mix","Code":null,"Product Name":"Color Mix Thinner","Finish":"N/A","Base Type":"Enamel","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Stynylrez","Range":"Surface Primer","Code":"SNR201","Product Name":"White Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Stynylrez","Range":"Surface Primer","Code":"SNR202","Product Name":"Grey Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-10","Product Name":"Gun Metal","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-11","Product Name":"Chrome Silver","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-12","Product Name":"Gold Leaf","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-18","Product Name":"Semi Gloss Black","Finish":"Semi Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-19","Product Name":"Smoke","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-23","Product Name":"Clear Blue","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-24","Product Name":"Clear Yellow","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-25","Product Name":"Clear Green","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-27","Product Name":"Clear Red","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-3","Product Name":"Royal Blue","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-33","Product Name":"Bronze","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-34","Product Name":"Metallic Brown","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-8","Product Name":"Lemon Yellow","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-9","Product Name":"Brown","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-1","Product Name":"Flat Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-10","Product Name":"Flat Brown","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-11","Product Name":"J.N. Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-13","Product Name":"J.A. Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-14","Product Name":"J.A. Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-15","Product Name":"Flat Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-16","Product Name":"Flat Aluminium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-17","Product Name":"Sea Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-18","Product Name":"Medium Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-19","Product Name":"Sky Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-2","Product Name":"Flat White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-20","Product Name":"Medium Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-21","Product Name":"Sky","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-22","Product Name":"RLM Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-23","Product Name":"Light Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-24","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-26","Product Name":"Deep Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-27","Product Name":"Black Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-28","Product Name":"Dark Copper","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-50","Product Name":"Field Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-51","Product Name":"Khaki Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"US WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-52","Product Name":"Flat Earth","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"US WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-53","Product Name":"Neutral Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-54","Product Name":"Dark Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-55","Product Name":"Deck Tan","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-56","Product Name":"Metallic Grey","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-57","Product Name":"Buff","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-58","Product Name":"Olive Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-59","Product Name":"Desert Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-60","Product Name":"Dark Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-61","Product Name":"Dark Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-62","Product Name":"Olive Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-63","Product Name":"German Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-69","Product Name":"NATO Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-7","Product Name":"Flat Red","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-71","Product Name":"Cockpit Green (IJN)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"IJN","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-78","Product Name":"Wooden Deck Tan","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-8","Product Name":"Flat Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-81","Product Name":"Dark Green 2 (RAF)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"RAF WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-83","Product Name":"Medium Sea Grey 2 (RAF)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"RAF WWII","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-84","Product Name":"Dark Iron","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-85","Product Name":"Rubber Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":3,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-86","Product Name":"Flat Clear","Finish":"Flat Clear","Base Type":"Acrylic","Usage Tag":"Clear Coat","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-9","Product Name":"Hull Red","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Tamiya","Range":"Acrylic Thinner","Code":"X-20A","Product Name":"Tamiya Thinner (alt)","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":0,"Notes":null},{"Category":"Thinner","Brand":"Tamiya","Range":"Acrylic Thinner","Code":"X-28","Product Name":"Tamiya Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":3,"Notes":"One nearly empty"},{"Category":"Weathering","Brand":"Tamiya","Range":"Panel Line Accent","Code":null,"Product Name":"Black Panel Line Accent","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Turpenoid","Range":"Natural Thinner","Code":null,"Product Name":"Turpenoid Natural Thinner","Finish":"N/A","Base Type":"Solvent","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Gloss Black Primer","Finish":"Gloss","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Grey Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Black Self-Levelling Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":"Small bottle"},{"Category":"Thinner","Brand":"Ultimate","Range":"Airbrush Thinner","Code":null,"Product Name":"Airbrush Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":"Small amount"},{"Category":"Decal Medium","Brand":"Vallejo","Range":"Decal Medium","Code":"73.212","Product Name":"Alcohol-Based Decal Medium","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Color","Code":"70.869","Product Name":"Basalt Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Color","Code":"70.915","Product Name":"Deep Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.001","Product Name":"White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.006","Product Name":"Cam Light Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.050","Product Name":"Light Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.054","Product Name":"Dark Grey Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.057","Product Name":"Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.074","Product Name":"Beige","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.083","Product Name":"Orange","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.092","Product Name":"Medium Olive","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.139","Product Name":"US Field Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.271","Product Name":"German Red Brown","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.408","Product Name":"Pro Pink","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.711","Product Name":"Magnesium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.713","Product Name":"Jet Exhaust","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.717","Product Name":"Dull Aluminium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.720","Product Name":"Gunmetal Grey","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.721","Product Name":"Burnt Iron","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.723","Product Name":"Exhaust Manifold","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Thinner","Code":"71.361","Product Name":"Airbrush Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Thinner","Code":"71.361","Product Name":"Airbrush Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Flow Improver","Code":"71.462","Product Name":"Airbrush Flow Improver","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Flow Improver","Code":"71.462","Product Name":"Airbrush Flow Improver","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Decal Medium","Code":"73.212","Product Name":"Alcohol-Based Decal Medium","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Metal Color","Code":"77.657","Product Name":"Metal Varnish","Finish":"Varnish","Base Type":"Acrylic","Usage Tag":"Clear Coat","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Vallejo","Range":"Acrylic Varnish","Code":"26.519","Product Name":"Satin Acrylic Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Vallejo","Range":"Model Wash","Code":"76.517","Product Name":"Dark Grey Wash","Finish":"Acrylic","Base Type":"Acrylic","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Satin Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Flat Varnish","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Gloss Varnish","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null}];
+// ── DATA ──
+const INVENTORY = [{"Category":"Thinner","Brand":"Abteilung 502","Range":"Max Effect Thinner","Code":"ABT112","Product Name":"Max Effect Thinner","Finish":"N/A","Base Type":"Oil","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT005","Product Name":"Smoke","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT010","Product Name":"Yellow","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT020","Product Name":"Faded Dark Yellow","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT030","Product Name":"Faded Navy Blue","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT040","Product Name":"Faded Green","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT240","Product Name":"Cream Brown","Finish":"Oil","Base Type":"Oil","Usage Tag":"Aircraft Effects","Quantity":1,"Notes":"Set ABT305"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT500","Product Name":"Gundam Blue","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT505","Product Name":"Coagulated Blood","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT510","Product Name":"Starship Filth","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT515","Product Name":"Turquoise Lights","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT520","Product Name":"Dead Flesh","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Weathering","Brand":"Abteilung 502","Range":"Oil Paint","Code":"ABT525","Product Name":"Ghost Grey","Finish":"Oil","Base Type":"Oil","Usage Tag":"Fantasy/Sci-Fi","Quantity":1,"Notes":"Set ABT310"},{"Category":"Paint","Brand":"AK","Range":"Acrylic Modeling","Code":"AK11056","Product Name":"Dark Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Interactive","Code":"AK3012","Product Name":"Light Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Interactive","Code":"AK3013","Product Name":"Highlight Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Figure","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK477","Product Name":"Chrome","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK479","Product Name":"Aluminium","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK486","Product Name":"Jet Exhaust","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"AK","Range":"Extreme Metal","Code":"AK670","Product Name":"Stainless Steel","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"AK","Range":"Primer","Code":"AK11242","Product Name":"Black Primer","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"AK","Range":"Wet Effects","Code":"AK079","Product Name":"Wet Effects Fluid","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Effects","Quantity":1,"Notes":null},{"Category":"Masking","Brand":"Ammo by Mig","Range":"Liquid Mask","Code":"A.MIG-2032","Product Name":"Liquid Mask","Finish":"N/A","Base Type":"Latex","Usage Tag":"Masking","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Enamel Wash","Code":"A.MIG-1009","Product Name":"Starship Wash","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Panel Line Wash","Code":"A.MIG-1600","Product Name":"PLW Light Grey","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Ammo by Mig","Range":"Panel Line Wash","Code":"A.MIG-1605","Product Name":"PLW","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX001","Product Name":"1975 Reefer White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX004","Product Name":"Light Grime","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX011","Product Name":"1975 Engine Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Archive-X","Range":"Archive-X","Code":"AX042","Product Name":"1975 SP Lettering Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Archive-X","Range":"Archive-X","Code":"AXAT30","Product Name":"Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"DecoArt","Range":"Crafters Acrylic","Code":null,"Product Name":"Silver Morning","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Art acrylic"},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Satin Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Flat Varnish","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Extra Acrylics","Range":"Acrylic Varnish","Code":null,"Product Name":"Gloss Varnish","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Light Wash","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Dark Dirt","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":2,"Notes":"One nearly empty"},{"Category":"Weathering","Brand":"Flory Models","Range":"Weathering Wash","Code":null,"Product Name":"Rust","Finish":"Clay","Base Type":"Water","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Generic","Range":"Water","Code":null,"Product Name":"Water","Finish":"N/A","Base Type":"Water","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Generic","Range":"White Spirit","Code":null,"Product Name":"White Spirit","Finish":"N/A","Base Type":"Solvent","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Green Stuff World","Range":"Acrylic","Code":"1843","Product Name":"Ivory Tusk","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A009","Product Name":"Dark Earth","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A016","Product Name":"Dark Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A025","Product Name":"Interior Grey-Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A026","Product Name":"Sky \"Type S\"","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A032","Product Name":"Ocean Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"A034","Product Name":"Medium Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C015","Product Name":"Black-Green RLM70","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C017","Product Name":"Dark Green RLM71","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C023","Product Name":"Grey RLM02","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C029","Product Name":"Light Blue RLM65","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C031","Product Name":"Gunship Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C032","Product Name":"Ocean Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C034","Product Name":"Medium Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C040","Product Name":"Black-Grey RLM66","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C047","Product Name":"Soviet Cockpit Blue-Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C066","Product Name":"Insignia (Orange) Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C101","Product Name":"Traffic White (RAL 9016)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C227","Product Name":"Dark Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C228","Product Name":"Medium Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Hataka","Range":"Acrylic","Code":"C229","Product Name":"Light Green-Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"IPA","Range":"Isopropyl Alcohol","Code":"99%","Product Name":"IPA 99%","Finish":"N/A","Base Type":"Alcohol","Usage Tag":"Cleaning/Thinning","Quantity":1,"Notes":null},{"Category":"Cleaner","Brand":"Iwata","Range":"Airbrush Cleaner","Code":null,"Product Name":"Iwata Airbrush Cleaner","Finish":"N/A","Base Type":"Cleaner","Usage Tag":"Airbrush Maintenance","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Set","Code":"MI-1","Product Name":"Micro Set","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Decal Medium","Brand":"Microscale","Range":"Micro Sol","Code":"MI-2","Product Name":"Micro Sol","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Gundam Builders","Code":"GB24","Product Name":"Trans-Am Red Pearl","Finish":"Pearl","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Gundam Builders","Code":"GB25","Product Name":"Trans-Am Highlight Red","Finish":"Gloss","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Metallic GX","Code":"GX215","Product Name":"Metal Bloody Red","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H17","Product Name":"Cocoa Brown","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H25","Product Name":"Sky Blue","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Hobby Color","Code":"H46","Product Name":"Emerald Green","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Aqueous Gundam","Code":"HG01","Product Name":"RX-78-2 Gundam White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Metallic","Code":"MC217","Product Name":"Gold","Finish":"Metallic","Base Type":"Lacquer","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Color Gundam","Code":"UG05","Product Name":"UNT's MS Grey","Finish":"Matt","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Mr Hobby","Range":"Mr Color Gundam","Code":"UG15","Product Name":"MS Phantom Grey","Finish":"Matt","Base Type":"Lacquer","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Mr Hobby","Range":"Mr Finishing Surfacer 1500","Code":null,"Product Name":"Mr Finishing Surfacer 1500 Grey","Finish":"Primer","Base Type":"Lacquer","Usage Tag":"Surface Prep","Quantity":4,"Notes":null},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Rapid Thinner","Code":null,"Product Name":"Mr Color Rapid Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Half bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Mr Color Thinner","Code":"250","Product Name":"Mr Color Thinner 250","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Nearly empty"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Leveling Thinner","Code":"400","Product Name":"Mr Color Leveling Thinner","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Full bottle"},{"Category":"Thinner","Brand":"Mr Hobby","Range":"Leveling Thinner","Code":"small","Product Name":"Mr Color Leveling Thinner (small)","Finish":"N/A","Base Type":"Lacquer","Usage Tag":"N/A","Quantity":1,"Notes":"Small bottle"},{"Category":"Varnish","Brand":"Pledge","Range":"Floor Polish","Code":null,"Product Name":"Pledge Floor Wax","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Pébéo","Range":"Studio Acrylic","Code":"41","Product Name":"White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Art acrylic"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"06","Product Name":"Tar Black","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"09","Product Name":"Anthracite","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"12","Product Name":"Gloss Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"15","Product Name":"Flat Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"301","Product Name":"White","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"310","Product Name":"Lufthansa Yellow","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"330","Product Name":"Fiery Red","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"360","Product Name":"Fern Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"361","Product Name":"Olive Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"364","Product Name":"Leaf Green","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"374","Product Name":"Grey (RAL 7001)","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"378","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"51","Product Name":"Light Blue","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"52","Product Name":"Blue","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"57","Product Name":"Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"67","Product Name":"Greenish Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"74","Product Name":"Gunship Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"79","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"86","Product Name":"Olive Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"87","Product Name":"Stone Grey","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Paint","Brand":"Revell","Range":"Acrylic/Enamel","Code":"91","Product Name":"Dark Brown","Finish":"Matt","Base Type":"Enamel/Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":"Very old"},{"Category":"Thinner","Brand":"Revell","Range":"Color Mix","Code":null,"Product Name":"Color Mix Thinner","Finish":"N/A","Base Type":"Enamel","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Stynylrez","Range":"Surface Primer","Code":"SNR201","Product Name":"White Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Stynylrez","Range":"Surface Primer","Code":"SNR202","Product Name":"Grey Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-10","Product Name":"Gun Metal","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-11","Product Name":"Chrome Silver","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-12","Product Name":"Gold Leaf","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-18","Product Name":"Semi Gloss Black","Finish":"Semi Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-19","Product Name":"Smoke","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-23","Product Name":"Clear Blue","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-24","Product Name":"Clear Yellow","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-25","Product Name":"Clear Green","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-27","Product Name":"Clear Red","Finish":"Gloss Clear","Base Type":"Acrylic","Usage Tag":"Clear / Tint","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-3","Product Name":"Royal Blue","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-33","Product Name":"Bronze","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-34","Product Name":"Metallic Brown","Finish":"Gloss Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-8","Product Name":"Lemon Yellow","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"X","Code":"X-9","Product Name":"Brown","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-1","Product Name":"Flat Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-10","Product Name":"Flat Brown","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-11","Product Name":"J.N. Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-13","Product Name":"J.A. Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-14","Product Name":"J.A. Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-15","Product Name":"Flat Flesh","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-16","Product Name":"Flat Aluminium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-17","Product Name":"Sea Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-18","Product Name":"Medium Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-19","Product Name":"Sky Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-2","Product Name":"Flat White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-20","Product Name":"Medium Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-21","Product Name":"Sky","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-22","Product Name":"RLM Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-23","Product Name":"Light Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-24","Product Name":"Dark Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-26","Product Name":"Deep Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-27","Product Name":"Black Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-28","Product Name":"Dark Copper","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-50","Product Name":"Field Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-51","Product Name":"Khaki Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"US WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-52","Product Name":"Flat Earth","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"US WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-53","Product Name":"Neutral Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-54","Product Name":"Dark Sea Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-55","Product Name":"Deck Tan","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-56","Product Name":"Metallic Grey","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-57","Product Name":"Buff","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-58","Product Name":"Olive Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-59","Product Name":"Desert Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-60","Product Name":"Dark Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-61","Product Name":"Dark Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-62","Product Name":"Olive Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-63","Product Name":"German Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-69","Product Name":"NATO Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-7","Product Name":"Flat Red","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-71","Product Name":"Cockpit Green (IJN)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"IJN","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-78","Product Name":"Wooden Deck Tan","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-8","Product Name":"Flat Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-81","Product Name":"Dark Green 2 (RAF)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"RAF WWII","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-83","Product Name":"Medium Sea Grey 2 (RAF)","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"RAF WWII","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-84","Product Name":"Dark Iron","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-85","Product Name":"Rubber Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":3,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-86","Product Name":"Flat Clear","Finish":"Flat Clear","Base Type":"Acrylic","Usage Tag":"Clear Coat","Quantity":2,"Notes":null},{"Category":"Paint","Brand":"Tamiya","Range":"XF","Code":"XF-9","Product Name":"Hull Red","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Tamiya","Range":"Acrylic Thinner","Code":"X-20A","Product Name":"Tamiya Thinner (alt)","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":0,"Notes":null},{"Category":"Thinner","Brand":"Tamiya","Range":"Acrylic Thinner","Code":"X-28","Product Name":"Tamiya Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":3,"Notes":"One nearly empty"},{"Category":"Weathering","Brand":"Tamiya","Range":"Panel Line Accent","Code":null,"Product Name":"Black Panel Line Accent","Finish":"Enamel","Base Type":"Enamel","Usage Tag":"Panel Line","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Turpenoid","Range":"Natural Thinner","Code":null,"Product Name":"Turpenoid Natural Thinner","Finish":"N/A","Base Type":"Solvent","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Gloss Black Primer","Finish":"Gloss","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Grey Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":null},{"Category":"Primer","Brand":"Ultimate","Range":"Acrylic Polyurethane","Code":null,"Product Name":"Black Self-Levelling Primer","Finish":"Matt","Base Type":"Acrylic Polyurethane","Usage Tag":"Surface Prep","Quantity":1,"Notes":"Small bottle"},{"Category":"Thinner","Brand":"Ultimate","Range":"Airbrush Thinner","Code":null,"Product Name":"Airbrush Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":"Small amount"},{"Category":"Decal Medium","Brand":"Vallejo","Range":"Decal Medium","Code":"73.212","Product Name":"Alcohol-Based Decal Medium","Finish":"N/A","Base Type":"Solution","Usage Tag":"Decals","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Color","Code":"70.869","Product Name":"Basalt Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Color","Code":"70.915","Product Name":"Deep Yellow","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.001","Product Name":"White","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.006","Product Name":"Cam Light Green","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.050","Product Name":"Light Grey","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.054","Product Name":"Dark Grey Blue","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.057","Product Name":"Black","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.074","Product Name":"Beige","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.083","Product Name":"Orange","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.092","Product Name":"Medium Olive","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.139","Product Name":"US Field Drab","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.271","Product Name":"German Red Brown","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Model Air","Code":"71.408","Product Name":"Pro Pink","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"General Use","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.711","Product Name":"Magnesium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.713","Product Name":"Jet Exhaust","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.717","Product Name":"Dull Aluminium","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.720","Product Name":"Gunmetal Grey","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.721","Product Name":"Burnt Iron","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Paint","Brand":"Vallejo","Range":"Metal Color","Code":"77.723","Product Name":"Exhaust Manifold","Finish":"Metallic","Base Type":"Acrylic","Usage Tag":"Metallic / Detail","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Thinner","Code":"71.361","Product Name":"Airbrush Thinner","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Airbrush Flow Improver","Code":"71.462","Product Name":"Airbrush Flow Improver","Finish":"N/A","Base Type":"Acrylic","Usage Tag":"N/A","Quantity":1,"Notes":null},{"Category":"Thinner","Brand":"Vallejo","Range":"Metal Color","Code":"77.657","Product Name":"Metal Varnish","Finish":"Varnish","Base Type":"Acrylic","Usage Tag":"Clear Coat","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Vallejo","Range":"Acrylic Varnish","Code":"26.519","Product Name":"Satin Acrylic Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Weathering","Brand":"Vallejo","Range":"Model Wash","Code":"76.517","Product Name":"Dark Grey Wash","Finish":"Acrylic","Base Type":"Acrylic","Usage Tag":"Wash","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Satin Varnish","Finish":"Satin","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Flat Varnish","Finish":"Matt","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null},{"Category":"Varnish","Brand":"Xtracrylix","Range":"Acrylic Varnish","Code":null,"Product Name":"Gloss Varnish","Finish":"Gloss","Base Type":"Acrylic","Usage Tag":"Sealing","Quantity":1,"Notes":null}];
 
-const SYSTEM_PROMPT = `You are a knowledgeable paint adviser for a scale plastic modeller. Expert knowledge of all major modelling paint ranges: Tamiya, Vallejo, Humbrol, Revell, AK Interactive, Ammo by Mig, Mr Hobby/Mr Color, Hataka, Gunze, Citadel, Archive-X and their cross-brand equivalents.
+// Colour lookup for paint swatches — code → hex
+const CODE_COLORS = {
+  'XF-1':'#1a1a1a','XF-2':'#f5f4f0','XF-7':'#c0392b','XF-8':'#2471a3','XF-9':'#7b2d00',
+  'XF-10':'#6b3a2a','XF-11':'#2d5a27','XF-13':'#3a6b2a','XF-14':'#9ba8a0','XF-15':'#e8c9a0',
+  'XF-16':'#c0c0c0','XF-17':'#1a4a6b','XF-18':'#2e5fa3','XF-19':'#b0b8b4','XF-20':'#8a9a95',
+  'XF-21':'#b8d4c0','XF-22':'#8c9490','XF-23':'#8ab4d4','XF-24':'#5a6560','XF-26':'#1e4d2b',
+  'XF-27':'#1a2e1a','XF-28':'#7a4a20','XF-50':'#4a6a8a','XF-51':'#6b6040','XF-52':'#8a6a40',
+  'XF-53':'#7a8a85','XF-54':'#6a7870','XF-55':'#c8b890','XF-56':'#8a9098','XF-57':'#c8a870',
+  'XF-58':'#3a5a28','XF-59':'#c8a050','XF-60':'#c8a040','XF-61':'#2a4a22','XF-62':'#4a5830',
+  'XF-63':'#3a4040','XF-69':'#1a1e1a','XF-71':'#3a5a40','XF-78':'#c8b080','XF-81':'#2d4d28',
+  'XF-83':'#7a8880','XF-84':'#4a4040','XF-85':'#1a1a18','XF-86':'#f0f0ee','XF-9':'#7b2d00',
+  'X-3':'#1a3a8a','X-8':'#e8d820','X-9':'#7a4020','X-10':'#4a5058','X-11':'#d8d8d8',
+  'X-12':'#d4a830','X-18':'#1a1a1a','X-19':'#3a3a3a','X-23':'#2040a0','X-24':'#e8d820',
+  'X-25':'#207040','X-27':'#b02020','X-33':'#8a6020','X-34':'#7a5030',
+};
 
-RULES:
-1. User's PREFERRED paint is Tamiya acrylic. Always lead with the ideal Tamiya equivalent (e.g. "The ideal Tamiya match is XF-22 RLM Grey").
-2. Then check inventory: do they already HAVE that Tamiya paint? If yes, great. If not, find the CLOSEST match they DO have from any brand.
-3. Be honest about match quality. If the best available is only approximate, say so. If mixing would help, suggest it.
-4. Conversational tone — like a knowledgeable friend at the hobby desk. Not overly bullet-heavy.
-5. Follow-up questions work in full conversation context.
-6. Revell paints marked "Very old" may be unusable — mention this.
-7. For Hataka/Archive-X codes without names, use your training knowledge of those ranges.
-8. NEVER claim the user has a paint not in the inventory below.
-9. If suggesting something to buy, be specific: brand, range, code.
-10. You have web search available. Use it to verify cross-brand paint equivalents, look up specific paint codes you are uncertain about, or find conversion charts. Always prefer verified information over guessing from memory. If you search, don't mention the search itself — just give the accurate answer.
+// Keyword colour fallback for names
+const NAME_COLORS = {
+  'black':'#1a1a1a','white':'#f8f8f6','red':'#c0392b','blue':'#2471a3','green':'#27ae60',
+  'yellow':'#f1c40f','grey':'#95a5a6','gray':'#95a5a6','brown':'#7b3f00','orange':'#e67e22',
+  'flesh':'#e8c9a0','tan':'#c8a870','earth':'#8a6a40','olive':'#4a5830','dark':'#3a3a3a',
+  'light':'#c8d0cc','silver':'#c0c0c8','gold':'#d4a830','copper':'#b87333','iron':'#4a4040',
+  'chrome':'#d8d8e0','aluminium':'#c8c8c8','aluminum':'#c8c8c8','metallic':'#a0a8b0',
+  'rust':'#8b3a20','sand':'#d4c090','buff':'#c8a870','pink':'#e8a0a0','purple':'#8040a0',
+  'clear':'#e0e8f0','smoke':'#5a5a60','wash':'#4a4a50','primer':'#8a8a90',
+};
 
-FORMAT: Conversational plain text. Use **bold** for paint codes/names. Keep responses focused and practical.
-
-INVENTORY:
-${JSON.stringify(INVENTORY)}`;
-
-let conversationHistory = [];
+// ── STATE ──
 let apiKey = '';
+let conversationHistory = [];
+let pickerSelections = { mood: null, genre: null, scale: null };
+let paintFilter = 'All';
+let collTab = 'stash';
+let collection = { stash: [], wip: [], done: [], wish: [] };
 
 // ── INIT ──
 function init() {
   apiKey = localStorage.getItem('planet_plastic_key') || '';
+  collection = JSON.parse(localStorage.getItem('planet_plastic_collection') || '{"stash":[],"wip":[],"done":[],"wish":[]}');
   if (apiKey) {
     showApp();
   } else {
@@ -553,6 +517,17 @@ function showApp() {
   document.getElementById('setup-screen').style.display = 'none';
   const app = document.getElementById('app-screen');
   app.style.display = 'flex';
+  renderPaints();
+  renderCollection();
+}
+
+// ── NAVIGATION ──
+function switchTab(tab) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + tab).classList.add('active');
+  document.getElementById('nav-' + tab).classList.add('active');
+  document.getElementById('adviser-search-bar').style.display = tab === 'adviser' ? '' : 'none';
 }
 
 // ── SETTINGS ──
@@ -560,83 +535,73 @@ function openSettings() {
   document.getElementById('settings-key-input').value = apiKey;
   document.getElementById('settings-overlay').classList.add('open');
 }
-
 function closeSettingsIfOutside(e) {
   if (e.target === document.getElementById('settings-overlay')) {
     document.getElementById('settings-overlay').classList.remove('open');
   }
 }
-
 function saveSettingsKey() {
   const val = document.getElementById('settings-key-input').value.trim();
-  if (val) {
-    localStorage.setItem('planet_plastic_key', val);
-    apiKey = val;
-  }
+  if (val) { localStorage.setItem('planet_plastic_key', val); apiKey = val; }
   document.getElementById('settings-overlay').classList.remove('open');
 }
-
 function clearConversation() {
   conversationHistory = [];
-  const chat = document.getElementById('chat-area');
-  chat.innerHTML = '';
+  document.getElementById('chat-area').innerHTML = '';
   document.getElementById('settings-overlay').classList.remove('open');
 }
 
-// ── CHAT ──
+// ── ADVISER (CHAT) ──
+const SYSTEM_PROMPT = `You are a knowledgeable paint adviser for a scale plastic modeller. Expert knowledge of all major modelling paint ranges: Tamiya, Vallejo, Humbrol, Revell, AK Interactive, Ammo by Mig, Mr Hobby/Mr Color, Hataka, Gunze, Citadel, Archive-X and their cross-brand equivalents.
+
+RULES:
+1. User's PREFERRED paint is Tamiya acrylic. Always lead with the ideal Tamiya equivalent (e.g. "The ideal Tamiya match is XF-22 RLM Grey").
+2. Then check inventory: do they already HAVE that Tamiya paint? If yes, great. If not, find the CLOSEST match they DO have from any brand.
+3. Be honest about match quality. If the best available is only approximate, say so. If mixing would help, suggest it.
+4. Conversational tone — like a knowledgeable friend at the hobby desk. Not overly bullet-heavy.
+5. Follow-up questions work in full conversation context.
+6. Revell paints marked "Very old" may be unusable — mention this.
+7. For Hataka/Archive-X codes without names, use your training knowledge of those ranges.
+8. NEVER claim the user has a paint not in the inventory below.
+9. If suggesting something to buy, be specific: brand, range, code.
+10. You have web search available. Use it to verify cross-brand paint equivalents, look up specific paint codes you are uncertain about, or find conversion charts. Always prefer verified information over guessing from memory. If you search, don't mention the search itself — just give the accurate answer.
+
+FORMAT: Conversational plain text. Use **bold** for paint codes/names. Keep responses focused and practical.
+
+INVENTORY:
+${JSON.stringify(INVENTORY)}`;
+
 async function sendMessage(textOverride) {
   const input = document.getElementById('msg-input');
   const text = textOverride || input.value.trim();
   if (!text || !apiKey) return;
-
   const btn = document.getElementById('send-btn');
   btn.disabled = true;
   input.value = '';
   input.style.height = 'auto';
-
   appendMessage('user', text);
   conversationHistory.push({ role: 'user', content: text });
   const thinkingEl = appendThinking();
   scrollToBottom();
-
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        system: SYSTEM_PROMPT,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: conversationHistory
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, system: SYSTEM_PROMPT, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: conversationHistory })
     });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error(err.error?.message || `HTTP ${response.status}`);
-    }
-
+    if (!response.ok) { const err = await response.json(); throw new Error(err.error?.message || `HTTP ${response.status}`); }
     const data = await response.json();
     const reply = data.content.filter(b => b.type === 'text').map(b => b.text || '').join('').trim();
     thinkingEl.remove();
-    conversationHistory.push({ role: 'assistant', content: reply });
+    conversationHistory.push({ role: 'assistant', content: data.content });
     appendMessage('assistant', reply);
   } catch (err) {
     thinkingEl.remove();
     appendMessage('assistant', `**Error:** ${err.message}. Check your API key in settings.`);
   }
-
   btn.disabled = false;
   scrollToBottom();
 }
-
-function sendChip(el) { sendMessage(el.textContent); }
 
 function appendMessage(role, text) {
   const chat = document.getElementById('chat-area');
@@ -646,7 +611,6 @@ function appendMessage(role, text) {
   chat.appendChild(row);
   return row;
 }
-
 function appendThinking() {
   const chat = document.getElementById('chat-area');
   const row = document.createElement('div');
@@ -655,7 +619,6 @@ function appendThinking() {
   chat.appendChild(row);
   return row;
 }
-
 function fmt(text) {
   return text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
@@ -665,22 +628,333 @@ function fmt(text) {
     .replace(/\n/g,'<br>')
     .replace(/^(.+)$/,'<p>$1</p>');
 }
+function scrollToBottom() { const c = document.getElementById('chat-area'); c.scrollTop = c.scrollHeight; }
+function autoResize(el) { el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 120) + 'px'; }
+function handleKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
 
-function scrollToBottom() {
-  const c = document.getElementById('chat-area');
-  c.scrollTop = c.scrollHeight;
+// ── KIT PICKER ──
+function selectChip(el, group) {
+  document.querySelectorAll(`#chips-${group} .chip`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  pickerSelections[group] = el.textContent;
+  document.getElementById('pick-btn').disabled = !pickerSelections.mood;
 }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
-
-function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
+async function pickKit() {
+  const stash = collection.stash;
+  if (!stash.length) {
+    document.getElementById('kit-result').innerHTML = '<div class="no-stash-msg">No kits in your stash yet. Import your Scalemates collection from the Collection tab first.</div>';
+    return;
   }
+  const btn = document.getElementById('pick-btn');
+  btn.disabled = true;
+  btn.textContent = 'Thinking…';
+  document.getElementById('kit-result').innerHTML = '';
+  const { mood, genre, scale } = pickerSelections;
+  const stashList = stash.map(k => `${k.name} (${k.scale || '?'}, ${k.brand || 'Unknown brand'}, ${k.type || 'Unknown type'})`).join('\n');
+  const prompt = `You are a scale modelling adviser. The user wants to pick their next kit to build.
+
+Mood: ${mood}
+Genre preference: ${genre || 'Any'}
+Scale preference: ${scale || 'Any'}
+
+Stash (${stash.length} kits):
+${stashList}
+
+Pick the single best kit from the stash for this mood and preferences. Return ONLY valid JSON in this exact format:
+{"name":"Full kit name","scale":"1:72","brand":"Tamiya","reason":"Why this kit suits the mood","difficulty":3,"paint_tip":"Key paint or technique tip for this build","aftermarket":"Any worthwhile aftermarket or none"}
+
+difficulty is 1-5 (1=easy, 5=expert). Respond with JSON only, no other text.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 400, messages: [{ role: 'user', content: prompt }] })
+    });
+    const data = await response.json();
+    const raw = data.content?.[0]?.text || '';
+    const match = raw.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error('No JSON in response');
+    const kit = JSON.parse(match[0]);
+    renderKitCard(kit);
+  } catch (err) {
+    document.getElementById('kit-result').innerHTML = `<div class="no-stash-msg">Something went wrong: ${err.message}</div>`;
+  }
+  btn.disabled = false;
+  btn.textContent = 'Pick a kit for me';
 }
 
-</body></html>
+function renderKitCard(kit) {
+  const pips = Array.from({length: 5}, (_, i) => `<div class="pip ${i < kit.difficulty ? 'filled' : ''}"></div>`).join('');
+  document.getElementById('kit-result').innerHTML = `
+    <div class="kit-card">
+      <div class="kit-card-name">${esc(kit.name)}</div>
+      <div class="kit-card-meta">${esc(kit.scale || '')} · ${esc(kit.brand || '')}</div>
+      <div class="kit-card-reason">${esc(kit.reason)}</div>
+      ${kit.paint_tip ? `<div class="kit-card-row"><strong>Paint tip</strong> ${esc(kit.paint_tip)}</div>` : ''}
+      ${kit.aftermarket && kit.aftermarket.toLowerCase() !== 'none' ? `<div class="kit-card-row"><strong>Aftermarket</strong> ${esc(kit.aftermarket)}</div>` : ''}
+      <div class="difficulty-pips">${pips}</div>
+    </div>`;
+}
+
+// ── MY PAINTS ──
+function swatchColor(item) {
+  const code = item['Code'];
+  if (code && CODE_COLORS[code]) return CODE_COLORS[code];
+  const name = (item['Product Name'] || '').toLowerCase();
+  for (const [kw, hex] of Object.entries(NAME_COLORS)) {
+    if (name.includes(kw)) return hex;
+  }
+  const cat = (item['Category'] || '').toLowerCase();
+  if (cat === 'primer') return '#8a8a90';
+  if (cat === 'varnish') return '#e0e8f4';
+  if (cat === 'thinner') return '#e8f0e0';
+  if (cat === 'weathering') return '#7a6a50';
+  return '#d0d0d0';
+}
+
+function naturalSort(a, b) {
+  const na = (a['Code'] || a['Product Name'] || '').replace(/(\d+)/g, n => n.padStart(6,'0'));
+  const nb = (b['Code'] || b['Product Name'] || '').replace(/(\d+)/g, n => n.padStart(6,'0'));
+  return na.localeCompare(nb);
+}
+
+function setPaintFilter(el, val) {
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  paintFilter = val;
+  renderPaints();
+}
+
+function renderPaints() {
+  const q = (document.getElementById('paints-search-input')?.value || '').toLowerCase();
+  let items = [...INVENTORY];
+
+  if (paintFilter === 'Tamiya') items = items.filter(i => i.Brand === 'Tamiya');
+  else if (paintFilter === 'Vallejo') items = items.filter(i => i.Brand === 'Vallejo');
+  else if (paintFilter === 'Paint') items = items.filter(i => i.Category === 'Paint');
+  else if (paintFilter === 'Weathering') items = items.filter(i => i.Category === 'Weathering');
+  else if (paintFilter === 'Primer') items = items.filter(i => i.Category === 'Primer');
+  else if (paintFilter === 'Varnish') items = items.filter(i => i.Category === 'Varnish');
+  else if (paintFilter === 'Thinner') items = items.filter(i => i.Category === 'Thinner');
+
+  if (q) items = items.filter(i =>
+    (i['Product Name'] || '').toLowerCase().includes(q) ||
+    (i['Code'] || '').toLowerCase().includes(q) ||
+    (i['Brand'] || '').toLowerCase().includes(q)
+  );
+
+  items.sort(naturalSort);
+
+  const list = document.getElementById('paint-list');
+  if (!list) return;
+  list.innerHTML = items.map(item => {
+    const color = swatchColor(item);
+    const code = item['Code'] ? `${item['Brand']} ${item['Code']}` : item['Brand'];
+    const meta = [code, item['Finish']].filter(Boolean).join(' · ');
+    const qty = item['Quantity'] > 1 ? `×${item['Quantity']}` : '';
+    return `<div class="paint-row">
+      <div class="paint-swatch" style="background:${color}"></div>
+      <div class="paint-info">
+        <div class="paint-name">${esc(item['Product Name'])}</div>
+        <div class="paint-meta">${esc(meta)}</div>
+      </div>
+      ${qty ? `<div class="paint-qty">${qty}</div>` : ''}
+    </div>`;
+  }).join('') + `<div class="paints-count">${items.length} item${items.length !== 1 ? 's' : ''}</div>`;
+}
+
+// ── COLLECTION ──
+function saveCollection() {
+  localStorage.setItem('planet_plastic_collection', JSON.stringify(collection));
+}
+
+function setCollTab(el, tab) {
+  document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  collTab = tab;
+  renderCollection();
+}
+
+function genreEmoji(type) {
+  const t = (type || '').toLowerCase();
+  if (t.includes('aircraft') || t.includes('plane') || t.includes('airplane')) return '✈️';
+  if (t.includes('tank') || t.includes('armor') || t.includes('armour') || t.includes('vehicle')) return '🪖';
+  if (t.includes('ship') || t.includes('boat') || t.includes('naval')) return '⚓';
+  if (t.includes('car') || t.includes('auto')) return '🏎️';
+  if (t.includes('figure') || t.includes('human') || t.includes('person')) return '👤';
+  if (t.includes('sci') || t.includes('space') || t.includes('robot') || t.includes('gundam') || t.includes('mech')) return '🚀';
+  if (t.includes('helicopter')) return '🚁';
+  if (t.includes('motorcycle') || t.includes('bike')) return '🏍️';
+  return '📦';
+}
+
+function renderCollection() {
+  const q = (document.getElementById('coll-search-input')?.value || '').toLowerCase();
+  let items = collection[collTab] || [];
+  if (q) items = items.filter(k => (k.name || '').toLowerCase().includes(q) || (k.brand || '').toLowerCase().includes(q));
+
+  const statusLabels = { stash: 'stash', wip: 'wip', done: 'done', wish: 'wish' };
+  const moveOptions = {
+    stash: [['wip','→ In Progress'], ['done','→ Completed'], ['wish','→ Wishlist']],
+    wip:   [['stash','→ Stash'], ['done','→ Completed']],
+    done:  [['stash','→ Stash'], ['wip','→ In Progress']],
+    wish:  [['stash','→ Stash']],
+  };
+
+  const list = document.getElementById('kit-list');
+  if (!list) return;
+
+  if (!items.length) {
+    const tips = {
+      stash: 'Import your Scalemates stash using the CSV button above, or kits will appear here when moved from other tabs.',
+      wip: 'Move kits here from your stash when you start building.',
+      done: 'Completed builds will appear here.',
+      wish: 'Wishlist kits appear here after import.',
+    };
+    list.innerHTML = `<div class="coll-empty"><strong>${collTab === 'stash' ? 'Your stash is empty' : collTab === 'wip' ? 'Nothing in progress' : collTab === 'done' ? 'No completed builds yet' : 'Wishlist is empty'}</strong>${tips[collTab]}</div>`;
+    return;
+  }
+
+  const moves = moveOptions[collTab];
+  list.innerHTML = items.map((kit, idx) => {
+    const moveBtns = moves.map(([target, label]) =>
+      `<button class="kit-action-btn" onclick="moveKit('${collTab}',${idx},'${target}')">${label}</button>`
+    ).join('');
+    return `<div class="kit-item">
+      <div class="kit-thumb">${genreEmoji(kit.type)}</div>
+      <div class="kit-item-info">
+        <div class="kit-item-name">${esc(kit.name)}</div>
+        <div class="kit-item-meta">${[kit.scale, kit.brand].filter(Boolean).join(' · ')}</div>
+      </div>
+      <div class="kit-item-actions">
+        ${moveBtns}
+        <button class="kit-action-btn" onclick="deleteKit('${collTab}',${idx})" style="color:#d93025">✕</button>
+      </div>
+    </div>`;
+  }).join('') + `<div class="coll-count">${items.length} kit${items.length !== 1 ? 's' : ''}</div>`;
+}
+
+function moveKit(fromTab, idx, toTab) {
+  const kit = collection[fromTab].splice(idx, 1)[0];
+  collection[toTab].push(kit);
+  saveCollection();
+  renderCollection();
+}
+
+function deleteKit(tab, idx) {
+  collection[tab].splice(idx, 1);
+  saveCollection();
+  renderCollection();
+}
+
+function triggerImport() {
+  document.getElementById('csv-file-input').click();
+}
+
+function handleCSVImport(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result;
+    const result = parseScalematésCSV(text);
+    if (result.imported === 0) {
+      alert('No kits found in this CSV. Make sure it\'s exported from Scalemates (Profile → Export stash).');
+      return;
+    }
+    // Merge into collection avoiding duplicates by name
+    let added = 0;
+    for (const [tab, kits] of Object.entries(result.collection)) {
+      for (const kit of kits) {
+        const exists = collection[tab].some(k => k.name === kit.name && k.brand === kit.brand);
+        if (!exists) { collection[tab].push(kit); added++; }
+      }
+    }
+    saveCollection();
+    renderCollection();
+    alert(`Imported ${added} new kit${added !== 1 ? 's' : ''} (${result.imported} total in file, ${result.imported - added} already in collection).`);
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+function parseScalematésCSV(text) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  if (lines.length < 2) return { imported: 0, collection: { stash:[], wip:[], done:[], wish:[] } };
+
+  // Detect delimiter
+  const delim = lines[0].includes('\t') ? '\t' : ',';
+
+  function parseLine(line) {
+    const result = [];
+    let inQuote = false, cur = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') { inQuote = !inQuote; }
+      else if (ch === delim && !inQuote) { result.push(cur.trim()); cur = ''; }
+      else { cur += ch; }
+    }
+    result.push(cur.trim());
+    return result;
+  }
+
+  const headers = parseLine(lines[0]).map(h => h.replace(/^"|"$/g,'').trim().toLowerCase());
+
+  // Map common Scalemates header names
+  const colIdx = (names) => {
+    for (const n of names) {
+      const i = headers.indexOf(n);
+      if (i !== -1) return i;
+    }
+    return -1;
+  };
+
+  const iName   = colIdx(['name','kit name','model name','title']);
+  const iScale  = colIdx(['scale','scale (mm)']);
+  const iBrand  = colIdx(['brand','manufacturer','maker']);
+  const iStatus = colIdx(['status','shelf','collection status']);
+  const iType   = colIdx(['type','category','genre','subject']);
+  const iKitNo  = colIdx(['kit number','number','kit no','product number','sku']);
+
+  if (iName === -1) return { imported: 0, collection: { stash:[], wip:[], done:[], wish:[] } };
+
+  const result = { stash:[], wip:[], done:[], wish:[] };
+  let imported = 0;
+
+  for (let i = 1; i < lines.length; i++) {
+    const cols = parseLine(lines[i]);
+    const name = (cols[iName] || '').replace(/^"|"$/g,'').trim();
+    if (!name) continue;
+
+    const scale  = iScale  !== -1 ? (cols[iScale]  || '').replace(/^"|"$/g,'').trim() : '';
+    const brand  = iBrand  !== -1 ? (cols[iBrand]  || '').replace(/^"|"$/g,'').trim() : '';
+    const status = iStatus !== -1 ? (cols[iStatus] || '').replace(/^"|"$/g,'').trim().toLowerCase() : '';
+    const type   = iType   !== -1 ? (cols[iType]   || '').replace(/^"|"$/g,'').trim() : '';
+    const kitNo  = iKitNo  !== -1 ? (cols[iKitNo]  || '').replace(/^"|"$/g,'').trim() : '';
+
+    const kit = { name, scale, brand, type, kitNo };
+
+    // Map status to tab
+    let tab = 'stash';
+    if (status.includes('build') || status.includes('progress') || status.includes('wip') || status.includes('work')) tab = 'wip';
+    else if (status.includes('complet') || status.includes('built') || status.includes('done') || status.includes('finish')) tab = 'done';
+    else if (status.includes('wish') || status.includes('want')) tab = 'wish';
+
+    result[tab].push(kit);
+    imported++;
+  }
+
+  return { imported, collection: result };
+}
+
+// ── UTILITIES ──
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+init();
+</script>
+</body>
+</html>
