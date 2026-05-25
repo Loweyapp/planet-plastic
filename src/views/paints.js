@@ -49,14 +49,14 @@ export function renderPaints() {
       lastBrand = item['Brand'];
       html += `<div class="paint-brand-header">${esc(lastBrand)}</div>`;
     }
-    var color = swatchColor(item);
-    var meta  = [(item['Code'] || ''), item['Finish']].filter(Boolean).join(' · ');
+    var color   = swatchColor(item);
+    var primary = [item['Code'], item['Finish']].filter(Boolean).join(' · ') || esc(item['Product Name']);
     var qty   = item['Quantity'] > 1 ? `<div class="paint-qty">×${item['Quantity']}</div>` : '';
     html += `<div class="paint-row">
       <div class="paint-swatch" style="background:${color}"></div>
       <div class="paint-info">
-        <div class="paint-name">${esc(item['Product Name'])}</div>
-        <div class="paint-meta">${esc(meta)}</div>
+        <div class="paint-name">${esc(primary)}</div>
+        <div class="paint-meta">${esc(item['Product Name'])}</div>
       </div>
       ${qty}
     </div>`;
