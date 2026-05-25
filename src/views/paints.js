@@ -20,8 +20,6 @@ export function initPaints() {
 export function renderPaints() {
   var q = (document.getElementById('paints-search-input')?.value || '').toLowerCase();
   var items = INVENTORY.filter(item => {
-    if (activeFilter === 'Tamiya')     return item.Brand === 'Tamiya';
-    if (activeFilter === 'Vallejo')    return item.Brand === 'Vallejo';
     if (activeFilter === 'Paint')      return item.Category === 'Paint';
     if (activeFilter === 'Weathering') return item.Category === 'Weathering';
     if (activeFilter === 'Primer')     return item.Category === 'Primer';
@@ -34,6 +32,8 @@ export function renderPaints() {
     (item['Code'] || '').toLowerCase().includes(q) ||
     (item['Brand'] || '').toLowerCase().includes(q)
   ).sort((a, b) => {
+    var ba = (a['Brand'] || '').localeCompare(b['Brand'] || '');
+    if (ba !== 0) return ba;
     var na = (a['Code'] || a['Product Name'] || '').replace(/(\d+)/g, n => n.padStart(6, '0'));
     var nb = (b['Code'] || b['Product Name'] || '').replace(/(\d+)/g, n => n.padStart(6, '0'));
     return na.localeCompare(nb);
@@ -42,11 +42,17 @@ export function renderPaints() {
   var list = document.getElementById('paint-list');
   if (!list) return;
 
-  list.innerHTML = items.map(item => {
+  var html = '';
+  var lastBrand = null;
+  items.forEach(function (item) {
+    if (item['Brand'] !== lastBrand) {
+      lastBrand = item['Brand'];
+      html += `<div class="paint-brand-header">${esc(lastBrand)}</div>`;
+    }
     var color = swatchColor(item);
-    var meta  = [item['Brand'] + (item['Code'] ? ' ' + item['Code'] : ''), item['Finish']].filter(Boolean).join(' · ');
+    var meta  = [(item['Code'] || ''), item['Finish']].filter(Boolean).join(' · ');
     var qty   = item['Quantity'] > 1 ? `<div class="paint-qty">×${item['Quantity']}</div>` : '';
-    return `<div class="paint-row">
+    html += `<div class="paint-row">
       <div class="paint-swatch" style="background:${color}"></div>
       <div class="paint-info">
         <div class="paint-name">${esc(item['Product Name'])}</div>
@@ -54,5 +60,7 @@ export function renderPaints() {
       </div>
       ${qty}
     </div>`;
-  }).join('') + `<div class="paints-count">${items.length} item${items.length !== 1 ? 's' : ''}</div>`;
+  });
+  html += `<div class="paints-count">${items.length} item${items.length !== 1 ? 's' : ''}</div>`;
+  list.innerHTML = html;
 }

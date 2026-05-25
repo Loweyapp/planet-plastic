@@ -147,6 +147,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 .paint-info { flex: 1; min-width: 0; }
 .paint-name { font-size: 14px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .paint-meta { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.paint-brand-header { padding: 8px 16px 4px; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text3); background: var(--bg); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 1; }
 .paint-qty { font-size: 13px; color: var(--text3); flex-shrink: 0; font-weight: 500; }
 .paints-count { font-size: 12px; color: var(--text3); text-align: center; padding: 10px; }
 
@@ -297,8 +298,6 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
     </div>
     <div class="paints-filter-row" id="paints-filter-row">
       <button class="filter-chip active" data-filter="All">All</button>
-      <button class="filter-chip" data-filter="Tamiya">Tamiya</button>
-      <button class="filter-chip" data-filter="Vallejo">Vallejo</button>
       <button class="filter-chip" data-filter="Paint">Paints</button>
       <button class="filter-chip" data-filter="Weathering">Weathering</button>
       <button class="filter-chip" data-filter="Primer">Primer</button>
