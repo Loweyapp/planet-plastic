@@ -40,6 +40,11 @@ src/
 - Always extract JSON with regex before `JSON.parse` — embedded newlines in string values break parsing silently
 - Use array schemas (`{"bullets": ["a", "b"]}`) rather than strings with `\n`
 
+## Version number
+- Hardcoded in **one place**: the `.header-wordmark` in `index.html` — `<span class="header-version">vX.X.X</span>`
+- Bump with every push so the deploy can be confirmed live
+- Current version: **v1.0.1**
+
 ## Deployment
 - Vercel auto-deploys from `main` branch
 - Always push to `main` for changes to go live
