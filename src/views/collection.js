@@ -88,17 +88,21 @@ function deleteKit(id) {
 }
 
 async function importKits(kits) {
-  var batch = _db.batch();
-  var ref   = _db.collection('users').doc(_uid).collection('kits');
-  // Avoid duplicating kits with the same name+brand
-  var existing = new Set(Object.values(kitsById).map(k => `${k.name}||${k.brand}`));
+  var batch   = _db.batch();
+  var ref     = _db.collection('users').doc(_uid).collection('kits');
+  var byKey   = {};
+  Object.values(kitsById).forEach(k => { byKey[`${k.name}||${k.brand}`] = k; });
   var added = 0;
   kits.forEach(function (kit) {
-    var key = `${kit.name}||${kit.brand}`;
-    if (!existing.has(key)) {
+    var key      = `${kit.name}||${kit.brand}`;
+    var existing = byKey[key];
+    if (!existing) {
       batch.set(ref.doc(), { ...kit, createdAt: new Date() });
-      existing.add(key);
+      byKey[key] = kit;
       added++;
+    } else if (kit.sourceUrl && !existing.sourceUrl) {
+      // Patch sourceUrl onto existing record
+      batch.update(ref.doc(existing.id), { sourceUrl: kit.sourceUrl });
     }
   });
   await batch.commit();
@@ -191,7 +195,7 @@ function handleCSVImport(e) {
       return;
     }
     var added = await importKits(result);
-    alert(`Imported ${added} new kit${added !== 1 ? 's' : ''} (${result.length - added} already in collection).`);
+    alert(`Imported ${added} new kit${added !== 1 ? 's' : ''}. Scalemates links updated on existing kits where available.`);
   };
   reader.readAsText(file);
   e.target.value = '';
