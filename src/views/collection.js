@@ -22,7 +22,6 @@ export function initCollection(db, uid) {
   });
 
   document.getElementById('coll-search-input').addEventListener('input', renderCollection);
-  document.getElementById('import-btn').addEventListener('click', () => document.getElementById('csv-file-input').click());
   document.getElementById('csv-file-input').addEventListener('change', handleCSVImport);
 
   document.getElementById('kit-list').addEventListener('click', function (e) {
