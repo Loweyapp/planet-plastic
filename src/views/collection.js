@@ -135,10 +135,13 @@ function openKitSheet(id) {
   var sourceLink = document.getElementById('kit-sheet-source-link');
   if (kit.sourceUrl) {
     sourceLink.href = kit.sourceUrl;
-    sourceLink.style.display = 'block';
+    sourceLink.textContent = 'View on Scalemates ↗';
   } else {
-    sourceLink.style.display = 'none';
+    var q = encodeURIComponent([kit.name, kit.brand].filter(Boolean).join(' '));
+    sourceLink.href = 'https://www.scalemates.com/kits/?q=' + q;
+    sourceLink.textContent = 'Search on Scalemates ↗';
   }
+  sourceLink.style.display = 'block';
 
   document.getElementById('kit-sheet-delete-btn').dataset.id = id;
   document.getElementById('kit-overlay').classList.add('open');
@@ -224,6 +227,7 @@ function parseScalematetsCSV(text) {
   var iStatus = col('status', 'shelf', 'collection status');
   var iType   = col('type', 'category', 'genre', 'subject');
   var iKitNo  = col('kit number', 'number', 'kit no', 'product number', 'sku');
+  var iUrl    = col('url', 'link', 'page', 'scalemates url', 'scalemates link');
 
   if (iName === -1) return [];
 
@@ -239,7 +243,10 @@ function parseScalematetsCSV(text) {
     else if (status.includes('complet') || status.includes('built') || status.includes('done')) tab = 'done';
     else if (status.includes('wish') || status.includes('want')) tab = 'wish';
 
-    return [{ name, scale: clean(iScale), brand: clean(iBrand), type: clean(iType), kitNo: clean(iKitNo), status: tab }];
+    var sourceUrl = clean(iUrl);
+    var kit = { name, scale: clean(iScale), brand: clean(iBrand), type: clean(iType), kitNo: clean(iKitNo), status: tab };
+    if (sourceUrl) kit.sourceUrl = sourceUrl;
+    return [kit];
   });
 }
 
