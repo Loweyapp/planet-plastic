@@ -87,26 +87,35 @@ function showApp(db, user, firebase) {
 
 // ── Pull-to-refresh ───────────────────────────────────────────────────────────
 function initPullToRefresh() {
-  var el        = document.getElementById('app-screen');
   var indicator = document.getElementById('ptr-indicator');
   var startY = 0, pulling = false;
-  var THRESHOLD = 72;
+  var THRESHOLD = 80;
 
-  el.addEventListener('touchstart', function (e) {
-    if (el.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; }
-  }, { passive: true });
+  function activeScrollTop() {
+    var view = document.querySelector('.view.active');
+    return view ? view.scrollTop : 0;
+  }
 
-  el.addEventListener('touchmove', function (e) {
-    if (!pulling) return;
-    var dy = e.touches[0].clientY - startY;
-    if (dy > 0) {
-      var progress = Math.min(dy / THRESHOLD, 1);
-      indicator.style.opacity  = progress;
-      indicator.style.transform = `translateY(${Math.min(dy * 0.4, 28)}px)`;
+  document.addEventListener('touchstart', function (e) {
+    if (activeScrollTop() === 0) {
+      startY  = e.touches[0].clientY;
+      pulling = true;
     }
   }, { passive: true });
 
-  el.addEventListener('touchend', function (e) {
+  document.addEventListener('touchmove', function (e) {
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy > 8) {
+      var progress = Math.min(dy / THRESHOLD, 1);
+      indicator.style.opacity   = progress;
+      indicator.style.transform = `translateX(-50%) translateY(${Math.min(dy * 0.35, 24)}px)`;
+    } else {
+      pulling = false;
+    }
+  }, { passive: true });
+
+  document.addEventListener('touchend', function (e) {
     if (!pulling) return;
     var dy = e.changedTouches[0].clientY - startY;
     indicator.style.opacity   = '';
