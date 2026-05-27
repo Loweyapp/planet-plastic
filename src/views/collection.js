@@ -93,7 +93,7 @@ async function importKits(kits) {
   var ref     = _db.collection('users').doc(_uid).collection('kits');
   var byKey   = {};
   Object.values(kitsById).forEach(k => { byKey[`${k.name}||${k.brand}`] = k; });
-  var added = 0;
+  var added = 0, linked = 0, skipped = 0;
   kits.forEach(function (kit) {
     var key      = `${kit.name}||${kit.brand}`;
     var existing = byKey[key];
@@ -102,12 +102,14 @@ async function importKits(kits) {
       byKey[key] = kit;
       added++;
     } else if (kit.sourceUrl && !existing.sourceUrl) {
-      // Patch sourceUrl onto existing record
       batch.update(ref.doc(existing.id), { sourceUrl: kit.sourceUrl });
+      linked++;
+    } else {
+      skipped++;
     }
   });
   await batch.commit();
-  return added;
+  return { added, linked, skipped };
 }
 
 // ── Kit detail sheet ──────────────────────────────────────────────────────────
@@ -185,7 +187,7 @@ async function handleUrlImport() {
     var kit  = await res.json();
     if (kit.error) throw new Error(kit.error);
     if (!kit.name) throw new Error('Could not read kit details from that page.');
-    var added = await importKits([{ ...kit, status: 'stash', sourceUrl: url }]);
+    var { added } = await importKits([{ ...kit, status: 'stash', sourceUrl: url }]);
     input.value = '';
     alert(added ? `Added "${kit.name}" to your stash.` : `"${kit.name}" is already in your collection.`);
   } catch (e) {
@@ -207,8 +209,12 @@ function handleCSVImport(e) {
       alert("No kits found. Make sure this is a Scalemates stash export (Profile → Export stash).");
       return;
     }
-    var added = await importKits(result);
-    alert(`Imported ${added} new kit${added !== 1 ? 's' : ''}. Scalemates links updated on existing kits where available.`);
+    var { added, linked, skipped } = await importKits(result);
+    var parts = [];
+    if (added)   parts.push(`${added} new kit${added !== 1 ? 's' : ''} added`);
+    if (linked)  parts.push(`${linked} Scalemates link${linked !== 1 ? 's' : ''} updated`);
+    if (skipped) parts.push(`${skipped} already up to date`);
+    alert(parts.join('\n') || 'Nothing to import.');
   };
   reader.readAsText(file);
   e.target.value = '';

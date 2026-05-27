@@ -81,6 +81,39 @@ function showApp(db, user, firebase) {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
+
+  initPullToRefresh();
+}
+
+// ── Pull-to-refresh ───────────────────────────────────────────────────────────
+function initPullToRefresh() {
+  var el        = document.getElementById('app-screen');
+  var indicator = document.getElementById('ptr-indicator');
+  var startY = 0, pulling = false;
+  var THRESHOLD = 72;
+
+  el.addEventListener('touchstart', function (e) {
+    if (el.scrollTop === 0) { startY = e.touches[0].clientY; pulling = true; }
+  }, { passive: true });
+
+  el.addEventListener('touchmove', function (e) {
+    if (!pulling) return;
+    var dy = e.touches[0].clientY - startY;
+    if (dy > 0) {
+      var progress = Math.min(dy / THRESHOLD, 1);
+      indicator.style.opacity  = progress;
+      indicator.style.transform = `translateY(${Math.min(dy * 0.4, 28)}px)`;
+    }
+  }, { passive: true });
+
+  el.addEventListener('touchend', function (e) {
+    if (!pulling) return;
+    var dy = e.changedTouches[0].clientY - startY;
+    indicator.style.opacity   = '';
+    indicator.style.transform = '';
+    pulling = false;
+    if (dy >= THRESHOLD) window.location.reload();
+  }, { passive: true });
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────
