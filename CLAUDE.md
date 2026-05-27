@@ -43,7 +43,7 @@ src/
 ## Version number
 - Hardcoded in **one place**: the `.header-wordmark` in `index.html` — `<span class="header-version">vX.X.X</span>`
 - Bump with every push so the deploy can be confirmed live
-- Current version: **v1.1.7**
+- Current version: **v1.1.8**
 
 ## Deployment
 - Vercel auto-deploys from `main` branch
