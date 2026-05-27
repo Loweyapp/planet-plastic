@@ -118,7 +118,7 @@ function openKitSheet(id) {
   var boxart = document.getElementById('kit-sheet-boxart');
   var kitId  = kit.sourceUrl ? kit.sourceUrl.split('--').pop().replace(/\D/g, '') : '';
   if (kitId) {
-    boxart.src = 'https://www.scalemates.com/products/img/' + kitId[0] + '/' + kitId[1] + '/' + kitId[2] + '/' + kitId + '-box.jpg';
+    boxart.src = '/api/box-art?id=' + kitId;
     boxart.style.display = 'block';
     boxart.onerror = function () { boxart.style.display = 'none'; document.getElementById('kit-sheet-emoji').style.display = 'block'; };
     document.getElementById('kit-sheet-emoji').style.display = 'none';
