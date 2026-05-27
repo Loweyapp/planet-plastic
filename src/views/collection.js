@@ -79,6 +79,10 @@ export function getStashKits() {
   return Object.values(kitsById).filter(k => k.status === 'stash');
 }
 
+export function refreshCollection() {
+  subscribeToKits();
+}
+
 // ── Mutations ─────────────────────────────────────────────────────────────────
 function moveKit(id, newStatus) {
   _db.collection('users').doc(_uid).collection('kits').doc(id).update({ status: newStatus });
