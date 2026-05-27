@@ -118,23 +118,6 @@ function openKitSheet(id) {
   if (!kit) return;
 
   // Box art — extract Scalemates ID and construct image URL
-  var boxart = document.getElementById('kit-sheet-boxart');
-  var emojiEl = document.getElementById('kit-sheet-emoji');
-  var imgSrc = kit.imageUrl
-    ? '/api/box-art?imgUrl=' + encodeURIComponent(kit.imageUrl)
-    : kit.sourceUrl
-      ? '/api/box-art?url=' + encodeURIComponent(kit.sourceUrl)
-      : null;
-  if (imgSrc) {
-    boxart.src = imgSrc;
-    boxart.style.display = 'block';
-    emojiEl.style.display = 'none';
-    boxart.onerror = function () { boxart.style.display = 'none'; emojiEl.style.display = 'block'; };
-  } else {
-    boxart.style.display = 'none';
-    emojiEl.style.display = 'block';
-  }
-
   document.getElementById('kit-sheet-emoji').textContent  = genreEmoji(kit.type);
   document.getElementById('kit-sheet-name').textContent   = kit.name;
   document.getElementById('kit-sheet-brand').textContent  = [kit.brand, kit.scale].filter(Boolean).join(' · ');

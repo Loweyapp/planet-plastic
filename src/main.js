@@ -77,36 +77,14 @@ function showApp(db, user, firebase) {
   initPaints();
   initCollection(db, user.uid);
 
-  // Register service worker + update check
+  // Register service worker
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').then(function (reg) {
-      // When a new SW takes over, show an update banner
-      navigator.serviceWorker.addEventListener('controllerchange', function () {
-        showUpdateBanner();
-      });
-      document.getElementById('refresh-btn').addEventListener('click', function () {
-        reg.update();
-        closeSettings();
-        showToast('Checking for updates…');
-      });
-    }).catch(() => {});
-  } else {
-    document.getElementById('refresh-btn').addEventListener('click', function () {
-      window.location.reload();
-    });
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
   }
-}
 
-function showUpdateBanner() {
-  var banner = document.getElementById('update-banner');
-  if (banner) banner.style.display = 'flex';
-}
-
-function showToast(msg) {
-  var t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(function () { t.classList.remove('show'); }, 2500);
+  document.getElementById('refresh-btn').addEventListener('click', function () {
+    window.location.reload();
+  });
 }
 
 // ── Navigation ────────────────────────────────────────────────────────────────

@@ -43,7 +43,7 @@ src/
 ## Version number
 - Hardcoded in **one place**: the `.header-wordmark` in `index.html` — `<span class="header-version">vX.X.X</span>`
 - Bump with every push so the deploy can be confirmed live
-- Current version: **v1.1.9**
+- Current version: **v1.2.0**
 
 ## Deployment
 - Vercel auto-deploys from `main` branch
@@ -92,6 +92,9 @@ and add it to the conversation context the same way inventory is handled.
 - **Add kit by Scalemates URL** — paste a Scalemates kit page URL, scrape name/scale/brand from that single page, add to collection in one step. Avoids full account sync complexity while solving the kit discovery gap. Single-page scraping is reliable enough; full account sync is not feasible (no public API, ToS risk).
 - **Build projects** — link kits to a build log: stages, paint recipes, notes, photos
 - **Shopping list** — paints needed for upcoming builds, cross-referenced against owned paints
+
+### Known blockers
+- **Box art from Scalemates** — blocked at CDN level. Both direct browser requests and server-side proxy requests return 403 regardless of headers. Not fixable without a Scalemates API or user-supplied images. Could revisit with a user-uploaded image URL field on each kit.
 
 ### Needs design thought first
 - **Two-way Scalemates sync** — not feasible without an official API. Scalemates has no public API; scraping the full account is fragile and likely ToS-violating. Planet Plastic should be the source of truth for build tracking; Scalemates is for discovery. Revisit only if Scalemates launches an API.
