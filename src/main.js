@@ -5,7 +5,12 @@ import { initPaints }                 from './views/paints.js';
 import { initCollection }             from './views/collection.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
+var loadingTimer = setTimeout(function () {
+  showError('Taking too long to load. <br><a href="" style="color:#1a73e8">Tap to reload</a>');
+}, 8000);
+
 loadFirebase(function (db, firebase) {
+  clearTimeout(loadingTimer);
   if (!db || !firebase) {
     showError('Could not load Firebase. Check your connection and reload.');
     return;
