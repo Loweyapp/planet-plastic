@@ -25,10 +25,25 @@ export function initCollection(db, uid) {
   document.getElementById('csv-file-input').addEventListener('change', handleCSVImport);
 
   document.getElementById('kit-list').addEventListener('click', function (e) {
-    var moveBtn   = e.target.closest('[data-move]');
-    var deleteBtn = e.target.closest('[data-delete]');
-    if (moveBtn)   moveKit(moveBtn.dataset.id, moveBtn.dataset.move);
-    if (deleteBtn) deleteKit(deleteBtn.dataset.id);
+    if (e.target.closest('[data-move]') || e.target.closest('[data-delete]')) return;
+    var item = e.target.closest('.kit-item');
+    if (item) openKitSheet(item.dataset.id);
+  });
+
+  document.getElementById('kit-overlay').addEventListener('click', function (e) {
+    if (e.target === document.getElementById('kit-overlay')) closeKitSheet();
+  });
+
+  document.getElementById('kit-sheet-actions').addEventListener('click', function (e) {
+    var btn = e.target.closest('[data-move]');
+    if (!btn) return;
+    moveKit(btn.dataset.id, btn.dataset.move);
+    closeKitSheet();
+  });
+
+  document.getElementById('kit-sheet-delete-btn').addEventListener('click', function () {
+    var id = document.getElementById('kit-sheet-delete-btn').dataset.id;
+    if (id) { deleteKit(id); closeKitSheet(); }
   });
 
   subscribeToKits();
@@ -84,6 +99,41 @@ async function importKits(kits) {
   });
   await batch.commit();
   return added;
+}
+
+// ── Kit detail sheet ──────────────────────────────────────────────────────────
+function openKitSheet(id) {
+  var kit = kitsById[id];
+  if (!kit) return;
+
+  document.getElementById('kit-sheet-emoji').textContent  = genreEmoji(kit.type);
+  document.getElementById('kit-sheet-name').textContent   = kit.name;
+  document.getElementById('kit-sheet-brand').textContent  = [kit.brand, kit.scale].filter(Boolean).join(' · ');
+
+  var fields = [
+    ['Kit number', kit.kitNo],
+    ['Type',       kit.type],
+    ['Scale',      kit.scale],
+    ['Brand',      kit.brand],
+    ['Status',     { stash: 'In stash', wip: 'Building', done: 'Completed', wish: 'Wishlist' }[kit.status] || kit.status],
+    ['Added',      kit.createdAt ? new Date(kit.createdAt.seconds ? kit.createdAt.seconds * 1000 : kit.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : ''],
+  ].filter(([, v]) => v);
+
+  document.getElementById('kit-sheet-fields').innerHTML = fields.map(([label, value]) =>
+    `<div class="kit-sheet-field"><span class="kit-sheet-label">${esc(label)}</span><span class="kit-sheet-value">${esc(String(value))}</span></div>`
+  ).join('');
+
+  var moves = MOVE_OPTIONS[kit.status] || [];
+  document.getElementById('kit-sheet-actions').innerHTML = moves.map(([target, label]) =>
+    `<button class="kit-sheet-move-btn" data-move="${target}" data-id="${kit.id}">${label}</button>`
+  ).join('');
+
+  document.getElementById('kit-sheet-delete-btn').dataset.id = id;
+  document.getElementById('kit-overlay').classList.add('open');
+}
+
+function closeKitSheet() {
+  document.getElementById('kit-overlay').classList.remove('open');
 }
 
 // ── CSV import ────────────────────────────────────────────────────────────────
@@ -200,7 +250,7 @@ export function renderCollection() {
     var moveBtns = moves.map(([target, label]) =>
       `<button class="kit-action-btn" data-move="${target}" data-id="${kit.id}">${label}</button>`
     ).join('');
-    return `<div class="kit-item">
+    return `<div class="kit-item" data-id="${kit.id}">
       <div class="kit-thumb">${genreEmoji(kit.type)}</div>
       <div class="kit-item-info">
         <div class="kit-item-name">${esc(kit.name)}</div>

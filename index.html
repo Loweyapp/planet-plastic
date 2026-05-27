@@ -184,6 +184,23 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
 .nav-item.active { color: var(--accent); }
 
+/* ── KIT DETAIL SHEET ── */
+#kit-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: flex-end; }
+#kit-overlay.open { display: flex; }
+.kit-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; padding: 20px 24px calc(24px + var(--safe-bottom)); box-shadow: 0 -4px 20px rgba(0,0,0,0.1); max-height: 80vh; overflow-y: auto; }
+.kit-sheet-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 20px; }
+.kit-sheet-emoji { font-size: 40px; text-align: center; margin-bottom: 12px; }
+.kit-sheet-name { font-family: var(--display); font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+.kit-sheet-brand { font-size: 14px; color: var(--text2); margin-bottom: 20px; }
+.kit-sheet-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.kit-sheet-field { display: flex; justify-content: space-between; align-items: center; font-size: 14px; border-bottom: 1px solid var(--bg); padding-bottom: 10px; }
+.kit-sheet-field:last-child { border-bottom: none; padding-bottom: 0; }
+.kit-sheet-label { color: var(--text3); font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em; }
+.kit-sheet-value { color: var(--text); font-weight: 500; text-align: right; }
+.kit-sheet-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+.kit-sheet-move-btn { flex: 1; min-width: 0; background: var(--accent-light); border: 1.5px solid var(--accent); border-radius: 8px; color: var(--accent); font-family: var(--sans); font-size: 13px; font-weight: 500; padding: 10px 8px; cursor: pointer; text-align: center; }
+.kit-sheet-delete-btn { width: 100%; background: transparent; border: 1px solid #fcc; border-radius: 8px; color: #d93025; font-family: var(--sans); font-size: 14px; padding: 11px; cursor: pointer; }
+
 /* ── SETTINGS SHEET ── */
 #settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.3); z-index: 100; align-items: flex-end; }
 #settings-overlay.open { display: flex; }
@@ -225,7 +242,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 <div id="app-screen">
   <div class="header">
     <div class="header-top">
-      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.0.5</span></div>
+      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.0.6</span></div>
       <div class="user-avatar" id="user-avatar"></div>
       <button class="icon-btn" id="settings-btn" title="Settings">
         <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-1l2.16-1.68c.19-.15.24-.42.12-.64l-2.04-3.54c-.12-.22-.39-.3-.61-.22l-2.55 1.02c-.53-.4-1.09-.73-1.71-.98l-.38-2.71C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.71c-.62.25-1.18.58-1.71.98L4.87 5.09c-.22-.08-.49 0-.61.22L2.22 8.85c-.12.22-.07.49.12.64L4.5 11.17c-.04.34-.07.67-.07 1s.03.65.07.98L2.34 14.83c-.19.15-.24.42-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.53.4 1.09.73 1.71.98l.38 2.71c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.71c.62-.25 1.18-.58 1.71-.98l2.55 1.02c.22.08.49 0 .61-.22l2.04-3.54c.12-.22.07-.49-.12-.64l-2.16-1.66z"/></svg>
@@ -346,6 +363,19 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
       Collection
     </button>
   </nav>
+</div>
+
+<!-- KIT DETAIL SHEET -->
+<div id="kit-overlay">
+  <div class="kit-sheet">
+    <div class="kit-sheet-handle"></div>
+    <div class="kit-sheet-emoji" id="kit-sheet-emoji"></div>
+    <div class="kit-sheet-name" id="kit-sheet-name"></div>
+    <div class="kit-sheet-brand" id="kit-sheet-brand"></div>
+    <div class="kit-sheet-fields" id="kit-sheet-fields"></div>
+    <div class="kit-sheet-actions" id="kit-sheet-actions"></div>
+    <button class="kit-sheet-delete-btn" id="kit-sheet-delete-btn">Delete kit</button>
+  </div>
 </div>
 
 <!-- SETTINGS SHEET -->
