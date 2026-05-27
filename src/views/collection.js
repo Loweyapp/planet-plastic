@@ -132,6 +132,14 @@ function openKitSheet(id) {
     `<button class="kit-sheet-move-btn" data-move="${target}" data-id="${kit.id}">${label}</button>`
   ).join('');
 
+  var sourceLink = document.getElementById('kit-sheet-source-link');
+  if (kit.sourceUrl) {
+    sourceLink.href = kit.sourceUrl;
+    sourceLink.style.display = 'block';
+  } else {
+    sourceLink.style.display = 'none';
+  }
+
   document.getElementById('kit-sheet-delete-btn').dataset.id = id;
   document.getElementById('kit-overlay').classList.add('open');
 }
@@ -157,7 +165,7 @@ async function handleUrlImport() {
     var kit  = await res.json();
     if (kit.error) throw new Error(kit.error);
     if (!kit.name) throw new Error('Could not read kit details from that page.');
-    var added = await importKits([{ ...kit, status: 'stash' }]);
+    var added = await importKits([{ ...kit, status: 'stash', sourceUrl: url }]);
     input.value = '';
     alert(added ? `Added "${kit.name}" to your stash.` : `"${kit.name}" is already in your collection.`);
   } catch (e) {
