@@ -37,6 +37,7 @@ export function initCollection(db, uid) {
   document.getElementById('kit-overlay').addEventListener('click', function (e) {
     if (e.target === document.getElementById('kit-overlay')) closeKitSheet();
   });
+  document.getElementById('kit-sheet-close').addEventListener('click', closeKitSheet);
 
   document.getElementById('kit-sheet-actions').addEventListener('click', function (e) {
     var btn = e.target.closest('[data-move]');
@@ -116,9 +117,8 @@ function openKitSheet(id) {
 
   // Box art — extract Scalemates ID and construct image URL
   var boxart = document.getElementById('kit-sheet-boxart');
-  var kitId  = kit.sourceUrl ? kit.sourceUrl.split('--').pop().replace(/\D/g, '') : '';
-  if (kitId) {
-    boxart.src = '/api/box-art?id=' + kitId;
+  if (kit.sourceUrl) {
+    boxart.src = '/api/box-art?url=' + encodeURIComponent(kit.sourceUrl);
     boxart.style.display = 'block';
     boxart.onerror = function () { boxart.style.display = 'none'; document.getElementById('kit-sheet-emoji').style.display = 'block'; };
     document.getElementById('kit-sheet-emoji').style.display = 'none';
