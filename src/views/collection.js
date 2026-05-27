@@ -51,6 +51,20 @@ export function initCollection(db, uid) {
     if (id) { deleteKit(id); closeKitSheet(); }
   });
 
+  if (db && uid) {
+    subscribeToKits();
+  } else {
+    // Show cached data immediately; Firestore connects shortly via connectCollectionFirestore()
+    var cached = localStorage.getItem('pp_kits');
+    if (cached) try { kitsById = JSON.parse(cached); } catch (e) {}
+    renderCollection();
+  }
+}
+
+// Called once Firebase auth resolves, after initCollection(null, null)
+export function connectCollectionFirestore(db, uid) {
+  _db = db;
+  _uid = uid;
   subscribeToKits();
 }
 
@@ -79,20 +93,19 @@ export function getStashKits() {
   return Object.values(kitsById).filter(k => k.status === 'stash');
 }
 
-export function refreshCollection() {
-  subscribeToKits();
-}
-
 // ── Mutations ─────────────────────────────────────────────────────────────────
 function moveKit(id, newStatus) {
+  if (!_db || !_uid) return;
   _db.collection('users').doc(_uid).collection('kits').doc(id).update({ status: newStatus });
 }
 
 function deleteKit(id) {
+  if (!_db || !_uid) return;
   _db.collection('users').doc(_uid).collection('kits').doc(id).delete();
 }
 
 async function importKits(kits) {
+  if (!_db || !_uid) return { added: 0, linked: 0, skipped: 0 };
   var batch   = _db.batch();
   var ref     = _db.collection('users').doc(_uid).collection('kits');
   var byKey   = {};
