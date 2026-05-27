@@ -114,6 +114,19 @@ function openKitSheet(id) {
   var kit = kitsById[id];
   if (!kit) return;
 
+  // Box art — extract Scalemates ID and construct image URL
+  var boxart = document.getElementById('kit-sheet-boxart');
+  var kitId  = kit.sourceUrl ? kit.sourceUrl.split('--').pop().replace(/\D/g, '') : '';
+  if (kitId) {
+    boxart.src = 'https://www.scalemates.com/products/img/' + kitId[0] + '/' + kitId[1] + '/' + kitId[2] + '/' + kitId + '-box.jpg';
+    boxart.style.display = 'block';
+    boxart.onerror = function () { boxart.style.display = 'none'; document.getElementById('kit-sheet-emoji').style.display = 'block'; };
+    document.getElementById('kit-sheet-emoji').style.display = 'none';
+  } else {
+    boxart.style.display = 'none';
+    document.getElementById('kit-sheet-emoji').style.display = 'block';
+  }
+
   document.getElementById('kit-sheet-emoji').textContent  = genreEmoji(kit.type);
   document.getElementById('kit-sheet-name').textContent   = kit.name;
   document.getElementById('kit-sheet-brand').textContent  = [kit.brand, kit.scale].filter(Boolean).join(' · ');
