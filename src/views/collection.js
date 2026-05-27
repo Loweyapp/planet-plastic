@@ -119,14 +119,20 @@ function openKitSheet(id) {
 
   // Box art — extract Scalemates ID and construct image URL
   var boxart = document.getElementById('kit-sheet-boxart');
-  if (kit.sourceUrl) {
-    boxart.src = '/api/box-art?url=' + encodeURIComponent(kit.sourceUrl);
+  var emojiEl = document.getElementById('kit-sheet-emoji');
+  var imgSrc = kit.imageUrl
+    ? '/api/box-art?imgUrl=' + encodeURIComponent(kit.imageUrl)
+    : kit.sourceUrl
+      ? '/api/box-art?url=' + encodeURIComponent(kit.sourceUrl)
+      : null;
+  if (imgSrc) {
+    boxart.src = imgSrc;
     boxart.style.display = 'block';
-    boxart.onerror = function () { boxart.style.display = 'none'; document.getElementById('kit-sheet-emoji').style.display = 'block'; };
-    document.getElementById('kit-sheet-emoji').style.display = 'none';
+    emojiEl.style.display = 'none';
+    boxart.onerror = function () { boxart.style.display = 'none'; emojiEl.style.display = 'block'; };
   } else {
     boxart.style.display = 'none';
-    document.getElementById('kit-sheet-emoji').style.display = 'block';
+    emojiEl.style.display = 'block';
   }
 
   document.getElementById('kit-sheet-emoji').textContent  = genreEmoji(kit.type);
@@ -187,7 +193,9 @@ async function handleUrlImport() {
     var kit  = await res.json();
     if (kit.error) throw new Error(kit.error);
     if (!kit.name) throw new Error('Could not read kit details from that page.');
-    var { added } = await importKits([{ ...kit, status: 'stash', sourceUrl: url }]);
+    var kitData = { ...kit, status: 'stash', sourceUrl: url };
+    if (!kitData.imageUrl) delete kitData.imageUrl;
+    var { added } = await importKits([kitData]);
     input.value = '';
     alert(added ? `Added "${kit.name}" to your stash.` : `"${kit.name}" is already in your collection.`);
   } catch (e) {

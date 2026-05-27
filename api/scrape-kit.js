@@ -22,13 +22,13 @@ export default async function handler(req, res) {
     if (response.ok) {
       var html = await response.text();
       var fromHtml = parseFromHtml(html);
-      // Merge: HTML wins where it has data, URL fills gaps
       return res.json({
-        name:   fromHtml.name   || fromUrl.name,
-        brand:  fromHtml.brand  || fromUrl.brand,
-        scale:  fromHtml.scale  || '',
-        kitNo:  fromHtml.kitNo  || fromUrl.kitNo,
-        type:   fromHtml.type   || '',
+        name:     fromHtml.name     || fromUrl.name,
+        brand:    fromHtml.brand    || fromUrl.brand,
+        scale:    fromHtml.scale    || '',
+        kitNo:    fromHtml.kitNo    || fromUrl.kitNo,
+        type:     fromHtml.type     || '',
+        imageUrl: fromHtml.imageUrl || '',
       });
     }
   } catch (e) {
@@ -91,7 +91,13 @@ function parseFromHtml(html) {
                   html.match(/subject[^>]*>([^<]{2,40})<\//i);
   if (typeMatch) type = typeMatch[1].trim();
 
-  return { name, brand, scale, kitNo, type };
+  // Box art image
+  var imageUrl = '';
+  var imgMatch = html.match(/<meta[^>]+property="og:image"\s+content="([^"]+)"/i) ||
+                 html.match(/<meta[^>]+content="([^"]+)"\s+property="og:image"/i);
+  if (imgMatch) imageUrl = imgMatch[1];
+
+  return { name, brand, scale, kitNo, type, imageUrl };
 }
 
 function toTitleCase(s) {
