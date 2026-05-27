@@ -118,9 +118,20 @@ function openKitSheet(id) {
   if (!kit) return;
 
   // Box art — extract Scalemates ID and construct image URL
-  document.getElementById('kit-sheet-emoji').textContent  = genreEmoji(kit.type);
-  document.getElementById('kit-sheet-name').textContent   = kit.name;
-  document.getElementById('kit-sheet-brand').textContent  = [kit.brand, kit.scale].filter(Boolean).join(' · ');
+  document.getElementById('kit-sheet-emoji').textContent = genreEmoji(kit.type);
+  document.getElementById('kit-sheet-name').textContent  = kit.name;
+  document.getElementById('kit-sheet-brand').textContent = [kit.brand, kit.scale].filter(Boolean).join(' · ');
+
+  var boxart  = document.getElementById('kit-sheet-boxart');
+  var emojiEl = document.getElementById('kit-sheet-emoji');
+  boxart.style.display = 'none';
+  emojiEl.style.display = 'block';
+  if (kit.name) {
+    var q = encodeURIComponent([kit.name, kit.brand].filter(Boolean).join(' '));
+    boxart.src = '/api/box-art?q=' + q;
+    boxart.onload  = function () { boxart.style.display = 'block'; emojiEl.style.display = 'none'; };
+    boxart.onerror = function () { boxart.style.display = 'none';  emojiEl.style.display = 'block'; };
+  }
 
   var fields = [
     ['Kit number', kit.kitNo],
