@@ -23,6 +23,10 @@ export function initCollection(db, uid) {
 
   document.getElementById('coll-search-input').addEventListener('input', renderCollection);
   document.getElementById('csv-file-input').addEventListener('change', handleCSVImport);
+  document.getElementById('url-import-btn').addEventListener('click', handleUrlImport);
+  document.getElementById('url-import-input').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') handleUrlImport();
+  });
 
   document.getElementById('kit-list').addEventListener('click', function (e) {
     if (e.target.closest('[data-move]') || e.target.closest('[data-delete]')) return;
@@ -134,6 +138,34 @@ function openKitSheet(id) {
 
 function closeKitSheet() {
   document.getElementById('kit-overlay').classList.remove('open');
+}
+
+// ── URL import ────────────────────────────────────────────────────────────────
+async function handleUrlImport() {
+  var input = document.getElementById('url-import-input');
+  var btn   = document.getElementById('url-import-btn');
+  var url   = (input.value || '').trim();
+  if (!url) return;
+  if (!url.includes('scalemates.com/kits/')) {
+    alert('Paste a Scalemates kit page URL (scalemates.com/kits/…)');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    var res  = await fetch('/api/scrape-kit?url=' + encodeURIComponent(url));
+    var kit  = await res.json();
+    if (kit.error) throw new Error(kit.error);
+    if (!kit.name) throw new Error('Could not read kit details from that page.');
+    var added = await importKits([{ ...kit, status: 'stash' }]);
+    input.value = '';
+    alert(added ? `Added "${kit.name}" to your stash.` : `"${kit.name}" is already in your collection.`);
+  } catch (e) {
+    alert('Could not add kit: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Add';
+  }
 }
 
 // ── CSV import ────────────────────────────────────────────────────────────────
