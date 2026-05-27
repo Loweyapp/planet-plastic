@@ -63,6 +63,26 @@ service cloud.firestore {
 }
 ```
 
+## Integrations
+
+### Matt Varnish Bot
+The Telegram bot at `loweyapp/matt-varnish-bot` integrates with this app to give the AI
+assistant context about Alex's hobby supplies.
+
+Currently connected endpoints:
+- `GET /api/inventory` — full paint inventory, fetched on every conversation and cached 1 hour
+
+**Whenever a new API endpoint is added here, consider whether Matt should have access to it.**
+
+Common candidates:
+- Kit inventory / stash
+- Wishlist
+- Build history or active builds
+- Any per-user data Alex would want Matt to know about
+
+If yes, update `api/webhook.js` in matt-varnish-bot to fetch and format the new data,
+and add it to the conversation context the same way inventory is handled.
+
 ## Feature backlog
 
 ### Quick wins
