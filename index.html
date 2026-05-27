@@ -60,8 +60,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── MAIN APP ── */
-#app-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; overscroll-behavior-y: none; }
-#ptr-indicator { position: fixed; top: 12px; left: 50%; background: var(--accent); color: #fff; font-size: 12px; font-family: var(--sans); padding: 6px 14px; border-radius: 20px; opacity: 0; pointer-events: none; z-index: 200; white-space: nowrap; }
+#app-screen { display: none; flex-direction: column; flex: 1; overflow: hidden; }
 
 /* Header */
 .header { background: var(--surface); padding: 0 20px; padding-top: var(--safe-top); border-bottom: 1px solid var(--border); flex-shrink: 0; }
@@ -249,11 +248,10 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 </div>
 
 <!-- MAIN APP -->
-<div id="ptr-indicator">↓ Release to refresh</div>
 <div id="app-screen">
   <div class="header">
     <div class="header-top">
-      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.1.6</span></div>
+      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.1.7</span></div>
       <div class="user-avatar" id="user-avatar"></div>
       <button class="icon-btn" id="settings-btn" title="Settings">
         <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-1l2.16-1.68c.19-.15.24-.42.12-.64l-2.04-3.54c-.12-.22-.39-.3-.61-.22l-2.55 1.02c-.53-.4-1.09-.73-1.71-.98l-.38-2.71C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.71c-.62.25-1.18.58-1.71.98L4.87 5.09c-.22-.08-.49 0-.61.22L2.22 8.85c-.12.22-.07.49.12.64L4.5 11.17c-.04.34-.07.67-.07 1s.03.65.07.98L2.34 14.83c-.19.15-.24.42-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.53.4 1.09.73 1.71.98l.38 2.71c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.71c.62-.25 1.18-.58 1.71-.98l2.55 1.02c.22.08.49 0 .61-.22l2.04-3.54c.12-.22.07-.49-.12-.64l-2.16-1.66z"/></svg>
@@ -401,6 +399,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
   <div class="settings-sheet">
     <div class="settings-handle"></div>
     <div class="settings-title">Settings</div>
+    <button class="sign-out-btn" id="refresh-btn" style="margin-bottom:10px">Refresh app</button>
     <button class="sign-out-btn" id="sign-out-btn">Sign out</button>
   </div>
 </div>
