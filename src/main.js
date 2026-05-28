@@ -106,6 +106,7 @@ function switchTab(tab) {
   document.getElementById('view-' + tab).classList.add('active');
   document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
   document.getElementById('adviser-search-bar').style.display = tab === 'adviser' ? '' : 'none';
+  document.getElementById('matt-input-bar').style.display = tab === 'matt' ? 'flex' : 'none';
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────
