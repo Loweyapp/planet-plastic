@@ -51,22 +51,9 @@ export function initCollection(db, uid) {
     if (id) { deleteKit(id); closeKitSheet(); }
   });
 
-  if (db && uid) {
-    subscribeToKits();
-  } else {
-    // Show cached data immediately; Firestore connects shortly via connectCollectionFirestore()
-    var cached = localStorage.getItem('pp_kits');
-    if (cached) try { kitsById = JSON.parse(cached); } catch (e) {}
-    renderCollection();
-  }
-}
-
-// Called once Firebase auth resolves, after initCollection(null, null)
-export function connectCollectionFirestore(db, uid) {
-  _db = db;
-  _uid = uid;
   subscribeToKits();
 }
+
 
 // ── Firestore real-time listener ──────────────────────────────────────────────
 function subscribeToKits() {
