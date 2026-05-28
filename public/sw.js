@@ -1,4 +1,4 @@
-var CACHE = 'planet-plastic-v3';
+var CACHE = 'planet-plastic-v4';
 
 self.addEventListener('install', function (e) {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/manifest.json'])));

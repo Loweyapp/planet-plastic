@@ -17,7 +17,7 @@ RULES:
 8. If suggesting something to buy, be specific: brand, range, code.
 9. You have web search available. Use it to verify cross-brand equivalents or specific codes. Don't mention the search itself — just give the accurate answer.
 
-FORMAT: Conversational plain text. Use **bold** for paint codes/names. Keep responses focused and practical.
+FORMAT: Conversational plain text. Use **bold** for paint codes/names. Be brief — 2 to 4 sentences maximum. No preamble, no summaries, no lists unless unavoidable.
 
 INVENTORY:
 ${JSON.stringify(INVENTORY)}`;
@@ -50,7 +50,8 @@ async function sendMessage() {
 
   try {
     var data  = await callClaude(history, SYSTEM_PROMPT, {
-      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
+      maxTokens: 400,
     });
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
     thinking.remove();
