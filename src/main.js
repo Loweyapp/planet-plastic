@@ -3,6 +3,7 @@ import { initAdviser }                from './views/adviser.js';
 import { initPicker }                 from './views/picker.js';
 import { initPaints }                 from './views/paints.js';
 import { initCollection } from './views/collection.js';
+import { initMatt }       from './views/matt.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 // #app-screen (including bottom nav) is always visible in the DOM.
@@ -83,6 +84,7 @@ function showApp(db, user, firebase) {
   initPicker();
   initPaints();
   initCollection(db, user.uid);
+  initMatt();
 
   // Register service worker
   if ('serviceWorker' in navigator) {
