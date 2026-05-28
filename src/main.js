@@ -2,7 +2,7 @@ import { loadFirebase, PREVIEW_MODE } from './firebase.js';
 import { initAdviser }                from './views/adviser.js';
 import { initPicker }                 from './views/picker.js';
 import { initPaints }                 from './views/paints.js';
-import { initCollection }             from './views/collection.js';
+import { initCollection, refreshCollection } from './views/collection.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 // #app-screen (including bottom nav) is always visible in the DOM.
@@ -90,7 +90,8 @@ function showApp(db, user, firebase) {
   }
 
   document.getElementById('refresh-btn').addEventListener('click', function () {
-    window.location.reload();
+    refreshCollection();
+    closeSettings();
   });
 }
 
