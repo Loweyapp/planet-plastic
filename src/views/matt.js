@@ -1,9 +1,12 @@
-import { callClaude }  from '../api.js';
-import { INVENTORY }   from '../data/inventory.js';
-import { esc, fmt }    from '../utils.js';
+import { callClaude }   from '../api.js';
+import { INVENTORY }    from '../data/inventory.js';
+import { esc, fmt }     from '../utils.js';
 import { getStashKits } from './collection.js';
 
-var history = [];
+var sessionHistory = [];
+var _db     = null;
+var _uid    = null;
+var _chatId = null;
 
 function buildSystemPrompt() {
   var stash = getStashKits();
@@ -30,15 +33,54 @@ USER'S KIT STASH:
 ${stash.length ? JSON.stringify(stash.map(k => ({ name: k.name, brand: k.brand, scale: k.scale, type: k.type }))) : 'No kits in stash yet.'}`;
 }
 
-export function initMatt() {
+export async function initMatt(db, uid) {
+  _db  = db;
+  _uid = uid;
+
+  if (_db && _uid) {
+    try {
+      var doc = await _db.collection('users').doc(_uid).get();
+      if (doc.exists) _chatId = doc.data().telegramChatId || null;
+    } catch (e) {
+      console.warn('Matt: could not load link status', e);
+    }
+  }
+
+  updateLinkStatus();
+
   var input = document.getElementById('matt-input');
   var btn   = document.getElementById('matt-send-btn');
-
   btn.addEventListener('click', sendMessage);
   input.addEventListener('keydown', function (e) {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   });
   input.addEventListener('input', function () { autoResize(input); });
+}
+
+export function getMattChatId() { return _chatId; }
+
+export async function linkMatt(chatId) {
+  _chatId = chatId;
+  if (_db && _uid) {
+    await _db.collection('users').doc(_uid).set({ telegramChatId: chatId }, { merge: true });
+  }
+  updateLinkStatus();
+}
+
+export async function unlinkMatt() {
+  _chatId = null;
+  if (_db && _uid) {
+    await _db.collection('users').doc(_uid).update({ telegramChatId: null });
+  }
+  updateLinkStatus();
+}
+
+function updateLinkStatus() {
+  var form   = document.getElementById('matt-link-form');
+  var linked = document.getElementById('matt-linked');
+  if (!form || !linked) return;
+  form.style.display   = _chatId ? 'none'  : 'block';
+  linked.style.display = _chatId ? 'block' : 'none';
 }
 
 async function sendMessage() {
@@ -52,18 +94,33 @@ async function sendMessage() {
   input.style.height = 'auto';
 
   appendMessage('user', text);
-  history.push({ role: 'user', content: text });
   var thinking = appendThinking();
   scrollChat();
 
   try {
-    var data  = await callClaude(history, buildSystemPrompt(), {
-      tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
-      maxTokens: 500,
-    });
-    var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    var reply;
+
+    if (_chatId) {
+      var res = await fetch('/api/matt', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text, chatId: _chatId, systemPrompt: buildSystemPrompt() }),
+      });
+      if (!res.ok) throw new Error(`Server error ${res.status}`);
+      var data = await res.json();
+      if (data.error) throw new Error(data.error);
+      reply = data.reply;
+    } else {
+      sessionHistory.push({ role: 'user', content: text });
+      var data = await callClaude(sessionHistory, buildSystemPrompt(), {
+        tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
+        maxTokens: 500,
+      });
+      reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+      sessionHistory.push({ role: 'assistant', content: data.content });
+    }
+
     thinking.remove();
-    history.push({ role: 'assistant', content: data.content });
     appendMessage('assistant', reply);
   } catch (err) {
     thinking.remove();

@@ -3,7 +3,7 @@ import { initAdviser }                from './views/adviser.js';
 import { initPicker }                 from './views/picker.js';
 import { initPaints }                 from './views/paints.js';
 import { initCollection } from './views/collection.js';
-import { initMatt }       from './views/matt.js';
+import { initMatt, linkMatt, unlinkMatt } from './views/matt.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 // #app-screen (including bottom nav) is always visible in the DOM.
@@ -79,12 +79,15 @@ function showApp(db, user, firebase) {
     closeSettings();
   });
 
+  document.getElementById('matt-link-submit-btn').addEventListener('click', handleMattLink);
+  document.getElementById('matt-unlink-btn').addEventListener('click', handleMattUnlink);
+
   // Initialise views
   initAdviser();
   initPicker();
   initPaints();
   initCollection(db, user.uid);
-  initMatt();
+  initMatt(db, user.uid);
 
   // Register service worker
   // Unregister any service worker — it was causing stale caching issues
@@ -115,4 +118,39 @@ function openSettings() {
 }
 function closeSettings() {
   document.getElementById('settings-overlay').classList.remove('open');
+}
+
+// ── Matt Telegram link ────────────────────────────────────────────────────────
+async function handleMattLink() {
+  var code  = (document.getElementById('matt-link-code').value || '').trim();
+  var errEl = document.getElementById('matt-link-error');
+  errEl.textContent = '';
+  if (!/^\d{6}$/.test(code)) {
+    errEl.textContent = 'Enter the 6-digit code from the bot.';
+    return;
+  }
+  var btn = document.getElementById('matt-link-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '…';
+  try {
+    var res  = await fetch('/api/matt-link', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code }),
+    });
+    var data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || 'Failed');
+    await linkMatt(data.chatId);
+    document.getElementById('matt-link-code').value = '';
+    closeSettings();
+  } catch (e) {
+    errEl.textContent = e.message || 'Could not link. Try again.';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Link';
+  }
+}
+
+async function handleMattUnlink() {
+  await unlinkMatt();
 }
