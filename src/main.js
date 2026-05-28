@@ -87,8 +87,11 @@ function showApp(db, user, firebase) {
   initMatt();
 
   // Register service worker
+  // Unregister any service worker — it was causing stale caching issues
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/sw.js').catch(() => {});
+    navigator.serviceWorker.getRegistrations().then(function (regs) {
+      regs.forEach(function (r) { r.unregister(); });
+    });
   }
 
   document.getElementById('refresh-btn').addEventListener('click', function () {
