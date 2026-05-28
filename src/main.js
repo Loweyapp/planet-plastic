@@ -5,12 +5,9 @@ import { initPaints }                 from './views/paints.js';
 import { initCollection }             from './views/collection.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-// Show the app shell immediately if the user was previously signed in so the
-// bottom nav is never hidden during a page reload while Firebase re-authenticates.
-if (localStorage.getItem('pp_loggedIn')) {
-  document.getElementById('loading-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display    = 'flex';
-}
+// #app-screen (including bottom nav) is always visible in the DOM.
+// #loading-screen and #auth-screen are fixed overlays that sit on top of it.
+// The nav can never "disappear" — only the overlays hide it visually.
 
 var loadingTimer = setTimeout(function () {
   showError('Taking too long to load. <br><a href="" style="color:#1a73e8">Tap to reload</a>');
@@ -27,7 +24,6 @@ loadFirebase(function (db, firebase) {
     if (user) {
       showApp(db, user, firebase);
     } else {
-      localStorage.removeItem('pp_loggedIn');
       showAuthScreen(firebase);
     }
   });
@@ -43,7 +39,7 @@ function showAuthScreen(firebase) {
     firebase.auth().signInWithPopup(provider).catch(function (err) {
       document.getElementById('auth-error').textContent = err.message;
     });
-  });
+  }, { once: true });
 }
 
 function showError(msg) {
@@ -52,12 +48,13 @@ function showError(msg) {
 }
 
 // ── App ───────────────────────────────────────────────────────────────────────
+var appInitialised = false;
 function showApp(db, user, firebase) {
-  localStorage.setItem('pp_loggedIn', '1');
-
   document.getElementById('loading-screen').style.display = 'none';
   document.getElementById('auth-screen').style.display   = 'none';
-  document.getElementById('app-screen').style.display    = 'flex';
+
+  if (appInitialised) return;
+  appInitialised = true;
 
   // User avatar in header
   if (user.photoURL) {
@@ -77,7 +74,6 @@ function showApp(db, user, firebase) {
     if (e.target === document.getElementById('settings-overlay')) closeSettings();
   });
   document.getElementById('sign-out-btn').addEventListener('click', function () {
-    localStorage.removeItem('pp_loggedIn');
     firebase.auth().signOut();
     closeSettings();
   });
