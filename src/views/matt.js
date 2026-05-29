@@ -78,9 +78,11 @@ export async function unlinkMatt() {
 function updateLinkStatus() {
   var form   = document.getElementById('matt-link-form');
   var linked = document.getElementById('matt-linked');
+  var sub    = document.getElementById('matt-sub');
   if (!form || !linked) return;
   form.style.display   = _chatId ? 'none'  : 'block';
   linked.style.display = _chatId ? 'block' : 'none';
+  if (sub) sub.textContent = _chatId ? '🔗 Linked to Telegram' : 'Session only — link in Settings';
 }
 
 async function sendMessage() {
