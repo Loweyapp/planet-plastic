@@ -23,22 +23,15 @@ INVENTORY:
 ${JSON.stringify(INVENTORY)}`;
 
 export function initAdviser() {
-  var input  = document.getElementById('msg-input');
-  var btn    = document.getElementById('send-btn');
-
-  btn.addEventListener('click', sendMessage);
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  });
-  input.addEventListener('input', function () { autoResize(input); });
+  // Input wiring is handled by main.js (shared input bar)
 }
 
-async function sendMessage() {
-  var input = document.getElementById('msg-input');
+export async function sendAdviserMessage() {
+  var input = document.getElementById('chat-input');
   var text  = input.value.trim();
   if (!text) return;
 
-  var btn = document.getElementById('send-btn');
+  var btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   input.value  = '';
   input.style.height = 'auto';
@@ -86,9 +79,4 @@ function appendThinking() {
 function scrollChat() {
   var c = document.getElementById('chat-area');
   c.scrollTop = c.scrollHeight;
-}
-
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }

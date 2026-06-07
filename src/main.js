@@ -1,15 +1,11 @@
 import { loadFirebase, PREVIEW_MODE } from './firebase.js';
-import { initAdviser }                from './views/adviser.js';
-import { initPicker }                 from './views/picker.js';
-import { initPaints }                 from './views/paints.js';
-import { initCollection } from './views/collection.js';
-import { initMatt, linkMatt, unlinkMatt } from './views/matt.js';
+import { initAdviser, sendAdviserMessage } from './views/adviser.js';
+import { initPicker }                      from './views/picker.js';
+import { initPaints }                      from './views/paints.js';
+import { initCollection }                  from './views/collection.js';
+import { initMatt, sendMattMessage, linkMatt, unlinkMatt } from './views/matt.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
-// #app-screen (including bottom nav) is always visible in the DOM.
-// #loading-screen and #auth-screen are fixed overlays that sit on top of it.
-// The nav can never "disappear" — only the overlays hide it visually.
-
 var loadingTimer = setTimeout(function () {
   showError('Taking too long to load. <br><a href="" style="color:#1a73e8">Tap to reload</a>');
 }, 8000);
@@ -89,7 +85,9 @@ function showApp(db, user, firebase) {
   initCollection(db, user.uid);
   initMatt(db, user.uid);
 
-  // Register service worker
+  // Shared chat input
+  initChatInput();
+
   // Unregister any service worker — it was causing stale caching issues
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(function (regs) {
@@ -102,14 +100,53 @@ function showApp(db, user, firebase) {
   });
 }
 
+// ── Chat input (shared by Adviser + Matt) ─────────────────────────────────────
+var activeChatMode = 'adviser';
+
+function initChatInput() {
+  var input = document.getElementById('chat-input');
+  var btn   = document.getElementById('chat-send-btn');
+
+  document.getElementById('chat-mode-bar').addEventListener('click', function (e) {
+    var modeBtn = e.target.closest('.chat-mode-btn');
+    if (!modeBtn) return;
+    switchChatMode(modeBtn.dataset.mode);
+  });
+
+  btn.addEventListener('click', dispatchChatSend);
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); dispatchChatSend(); }
+  });
+  input.addEventListener('input', function () {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+}
+
+function dispatchChatSend() {
+  if (activeChatMode === 'adviser') sendAdviserMessage();
+  else sendMattMessage();
+}
+
+function switchChatMode(mode) {
+  activeChatMode = mode;
+  document.querySelectorAll('.chat-mode-btn').forEach(function (b) {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  document.querySelectorAll('.chat-pane').forEach(function (p) {
+    p.classList.toggle('active', p.id === 'pane-' + mode);
+  });
+  document.getElementById('chat-input').placeholder =
+    mode === 'adviser' ? 'Ask about paints…' : 'Ask Matt anything…';
+}
+
 // ── Navigation ────────────────────────────────────────────────────────────────
 function switchTab(tab) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById('view-' + tab).classList.add('active');
   document.querySelector(`.nav-item[data-tab="${tab}"]`).classList.add('active');
-  document.getElementById('adviser-search-bar').style.display = tab === 'adviser' ? '' : 'none';
-  document.getElementById('matt-input-bar').style.display = tab === 'matt' ? 'flex' : 'none';
+  document.getElementById('chat-input-bar').style.display = tab === 'chat' ? 'flex' : 'none';
 }
 
 // ── Settings ──────────────────────────────────────────────────────────────────

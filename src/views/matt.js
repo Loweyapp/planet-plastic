@@ -47,14 +47,7 @@ export async function initMatt(db, uid) {
   }
 
   updateLinkStatus();
-
-  var input = document.getElementById('matt-input');
-  var btn   = document.getElementById('matt-send-btn');
-  btn.addEventListener('click', sendMessage);
-  input.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-  });
-  input.addEventListener('input', function () { autoResize(input); });
+  // Input wiring is handled by main.js (shared input bar)
 }
 
 export function getMattChatId() { return _chatId; }
@@ -85,12 +78,12 @@ function updateLinkStatus() {
   if (sub) sub.textContent = _chatId ? '🔗 Linked to Telegram' : 'Session only — link in Settings';
 }
 
-async function sendMessage() {
-  var input = document.getElementById('matt-input');
+export async function sendMattMessage() {
+  var input = document.getElementById('chat-input');
   var text  = input.value.trim();
   if (!text) return;
 
-  var btn = document.getElementById('matt-send-btn');
+  var btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   input.value  = '';
   input.style.height = 'auto';
@@ -155,7 +148,3 @@ function scrollChat() {
   c.scrollTop = c.scrollHeight;
 }
 
-function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-}
