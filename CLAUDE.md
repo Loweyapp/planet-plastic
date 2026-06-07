@@ -1,55 +1,101 @@
 # Planet Plastic
 
-Scale modelling PWA for Android. Plain JS + Vite, Firebase Auth + Firestore, deployed on Vercel.
+Scale modelling PWA for Android. Plain JS + Vite, Firebase Auth + Firestore (CDN, not npm), Anthropic API called direct from browser, deployed on Vercel from `main` branch (auto-deploy).
+
+## Owner
+Alex Lowe. Single-user app.
 
 ## Stack
-- **Plain JavaScript** — no React, no TypeScript
-- **Vite** — build tool only, used for env var injection (`VITE_ANTHROPIC_API_KEY` → `__ANTHROPIC_KEY__`)
-- **Firebase Firestore** — loaded via CDN script injection, NOT npm
+- **Plain JS + Vite** — no TypeScript, no React
+- **Firebase** — loaded via CDN script injection in `index.html`. Do NOT switch to npm firebase.
 - **Google Auth** — via Firebase CDN, same constraint
-- **Anthropic API** — called directly from the browser via `src/api.js`
-- **Open-Meteo** — not yet used, available if needed
+- **Anthropic API** — called direct from browser via `src/api.js` (`callClaude()`)
+- **Upstash Redis** — used by the Telegram bot (`matt-varnish-bot`), not directly by this app
+- **Vercel** — serverless API routes in `api/`, auto-deploys from `main`
 
 ## Project structure
 ```
+index.html              # All HTML, CSS, and <script type="module" src="/src/main.js">
 src/
-  main.js              # Entry point: Firebase boot, auth state, tab routing, settings
-  firebase.js          # CDN loader, PREVIEW_MODE detection, hardcoded Firebase config
-  api.js               # callClaude() helper — uses __ANTHROPIC_KEY__ injected at build time
-  utils.js             # esc(), fmt() text helpers
-  data/
-    inventory.js       # INVENTORY array — 211 Vallejo/Citadel/AK paints
-    colors.js          # CODE_COLORS, NAME_COLORS, swatchColor()
+  main.js               # Boot, auth, nav, settings, shared chat input
+  firebase.js           # CDN loader, PREVIEW_MODE detection, hardcoded config
+  api.js                # callClaude() — direct Anthropic API calls from browser
+  utils.js              # esc(), fmt() helpers
   views/
-    adviser.js         # Paint Adviser chat — uses INVENTORY in system prompt, web_search
-    picker.js          # Kit Picker — mood/genre/scale chips, calls Claude, imports getStashKits()
-    paints.js          # My Paints — searchable/filterable INVENTORY list with swatches
-    collection.js      # Collection — Firestore sync, CSV import, status management
+    adviser.js          # Paint adviser chat (Anthropic API, direct)
+    matt.js             # Matt Varnish general modelling companion
+    picker.js           # Kit picker (mood/genre/scale chips)
+    paints.js           # Paint inventory browser
+    collection.js       # Kit stash (Firestore CRUD, CSV import, Scalemates URL import)
+  data/
+    inventory.js        # Full paint inventory (static, hand-maintained)
+    colors.js           # Color swatch helpers
+api/
+  matt.js               # Proxy: browser → matt-varnish-bot /api/chat (keeps secret server-side)
+  matt-link.js          # Proxy: browser → matt-varnish-bot /api/link (Telegram account linking)
+  scrape-kit.js         # Scrapes Scalemates kit page for name/scale/brand
+  box-art.js            # Fetches box art image for kit detail sheet
+  inventory.js          # Serves inventory data
 ```
 
+## Navigation
+4 tabs (bottom nav): **Chat, Picker, Paints, Collection**
+
+The Chat tab has an **Adviser | Matt** segmented toggle at the top:
+- **Adviser mode** — paint-focused AI (`adviser.js`), DOM: `#pane-adviser` / `#chat-area`
+- **Matt mode** — general modelling companion (`matt.js`), DOM: `#pane-matt` / `#matt-chat`
+
+Both modes share a single fixed input bar (`#chat-input-bar`, `#chat-input`, `#chat-send-btn`). Routing is handled in `main.js` via `dispatchChatSend()` → `activeChatMode`.
+
 ## Key conventions
-- Firebase loaded via CDN (not npm) — do not change this
+- All HTML and CSS is in `index.html` — no separate CSS files
+- Views are `<div class="view" id="view-{tab}">`, shown/hidden via `.active` class
+- `switchTab(tab)` in `main.js` handles nav switching and shows/hides `#chat-input-bar`
+- `switchChatMode(mode)` in `main.js` handles Adviser/Matt toggle
+- Firebase loaded via CDN — do not change this
 - `PREVIEW_MODE` in `firebase.js` detects sandboxed iframes and skips Firebase auth
-- `__ANTHROPIC_KEY__` is injected at build time by Vite from `VITE_ANTHROPIC_API_KEY` env var in Vercel
-- Firestore data model: `users/{uid}/kits/{kitId}` subcollection
-- `getStashKits()` exported from `collection.js` — used by picker to suggest from stash only
-- CSV import supports Scalemates export format (flexible header detection, tab/comma delimiter)
+- `__ANTHROPIC_KEY__` injected at build time by Vite from `VITE_ANTHROPIC_API_KEY` env var in Vercel
+- **Version number** hardcoded in `index.html` header — bump with every push
+- Current version: **v1.2.21**
+- Run `npx vite build` before committing to confirm zero errors
+
+## Firestore data model
+- `users/{uid}/kits/{kitId}` — kit collection (status: stash | wip | done | wish)
+- `users/{uid}` document — user settings, inc. `telegramChatId` for Matt linking
 
 ## callClaude()
 - Lives in `src/api.js`
 - Always extract JSON with regex before `JSON.parse` — embedded newlines in string values break parsing silently
-- Use array schemas (`{"bullets": ["a", "b"]}`) rather than strings with `\n`
+- Use array schemas (`{"bullets": ["a", "b"]}`) not strings with `\n`
 
-## Version number
-- Hardcoded in **one place**: the `.header-wordmark` in `index.html` — `<span class="header-version">vX.X.X</span>`
-- Bump with every push so the deploy can be confirmed live
-- Current version: **v1.2.1**
+## Matt Varnish — Telegram integration
+Matt exists in two places:
 
-## Deployment
-- Vercel auto-deploys from `main` branch
-- Always push to `main` for changes to go live
-- Run `npx vite build` before committing to confirm zero errors
-- Dev branch convention: `claude/planet-plastic-development-*`
+1. **This app** (`src/views/matt.js`) — builds a dynamic system prompt including paint inventory + live kit stash from Firestore, calls `/api/matt` proxy
+2. **Telegram bot** (`loweyapp/matt-varnish-bot`) — separate Vercel repo, Node.js, stores history in Upstash Redis under key `mv:{chatId}`
+
+Both share the same Redis conversation history. When linked, the app calls `/api/matt` → proxies to `matt-varnish-bot.vercel.app/api/chat` with `Authorization: Bearer {CHAT_API_SECRET}`.
+
+**CRITICAL**: Matt's personality/system prompt exists in TWO places — `buildSystemPrompt()` in `src/views/matt.js` AND the Telegram bot's `api/webhook.js`. Any change to Matt's personality, tone, rules, or response format must be made in BOTH places.
+
+### Linking flow
+1. User sends `/link` to Matt Varnish Bot on Telegram → bot generates 6-digit code (5-min TTL in Redis)
+2. User enters code in Settings → Matt Varnish section
+3. App calls `POST /api/matt-link` → proxies to bot's `api/link.js` → returns `{ chatId }`
+4. `chatId` stored in Firestore (`users/{uid}.telegramChatId`) and in memory (`_chatId` in `matt.js`)
+
+### Required env vars on Vercel
+| Variable | Project | Value |
+|---|---|---|
+| `CHAT_API_SECRET` | planet-plastic + matt-varnish-bot | Same random string on both |
+| `MATT_BOT_URL` | planet-plastic only | `https://matt-varnish-bot.vercel.app` |
+
+## Tabs disappearing — history and fix
+Previously a persistent bug. Fixed in v1.2.15:
+- Nav is `position: fixed; bottom: 0; z-index: 999` **outside** `#app-screen` in the DOM
+- `#loading-screen` and `#auth-screen` are `position: fixed` overlays — never hide the nav
+- Service worker is **unregistered** on every load (was causing stale cache issues)
+- Do NOT re-register a service worker
 
 ## Firestore security rules
 ```
@@ -63,40 +109,18 @@ service cloud.firestore {
 }
 ```
 
-## Integrations
-
-### Matt Varnish Bot
-The Telegram bot at `loweyapp/matt-varnish-bot` integrates with this app to give the AI
-assistant context about Alex's hobby supplies.
-
-Currently connected endpoints:
-- `GET /api/inventory` — full paint inventory, fetched on every conversation and cached 1 hour
-
-**Whenever a new API endpoint is added here, consider whether Matt should have access to it.**
-
-Common candidates:
-- Kit inventory / stash
-- Wishlist
-- Build history or active builds
-- Any per-user data Alex would want Matt to know about
-
-If yes, update `api/webhook.js` in matt-varnish-bot to fetch and format the new data,
-and add it to the conversation context the same way inventory is handled.
-
 ## Feature backlog
 
-### Quick wins
-- Smoother CSV import UX — link directly to Scalemates export page to reduce friction
+### Next to build
+- **Projects** — a project is a first-class object (not tied to a single kit). Has name, description, multiple linked kits, reference URLs, notes. Mobile-first capture. Lives in its own Firestore subcollection `users/{uid}/projects`.
+- **Build diaries** — chronological log per project: text + optional photo entries, timestamped, append-only. Sub-feature of Projects.
 
-### Core features
-- **Add kit by Scalemates URL** — paste a Scalemates kit page URL, scrape name/scale/brand from that single page, add to collection in one step. Avoids full account sync complexity while solving the kit discovery gap. Single-page scraping is reliable enough; full account sync is not feasible (no public API, ToS risk).
-- **Build projects** — link kits to a build log: stages, paint recipes, notes, photos
-- **Shopping list** — paints needed for upcoming builds, cross-referenced against owned paints
+### Later
+- **Desktop layout** — wider view optimised for Alex's laptop desk mount in the modelling area. Large images, video-friendly. Build after Projects is solid.
 
-### Known blockers
-- **Box art from Scalemates** — blocked at CDN level. Both direct browser requests and server-side proxy requests return 403 regardless of headers. Not fixable without a Scalemates API or user-supplied images. Could revisit with a user-uploaded image URL field on each kit.
+## Design context
+Alex uses the app in two modes:
+- **Mobile at the workbench** — quick reference (paints, stash), fast capture, ask Matt a quick question
+- **Laptop on desk mount while modelling** — larger view, images, build references, video alongside the build
 
-### Needs design thought first
-- **Two-way Scalemates sync** — not feasible without an official API. Scalemates has no public API; scraping the full account is fragile and likely ToS-violating. Planet Plastic should be the source of truth for build tracking; Scalemates is for discovery. Revisit only if Scalemates launches an API.
-- Wish list / want-to-build list
-- Paint inventory tracking (what you own vs what's in INVENTORY)
+App stays lean and mobile-first. Desktop layout is a future enhancement.
