@@ -26,11 +26,36 @@ RULES:
 
 FORMAT: Conversational plain text. **Bold** for paint codes, kit names, or key terms. No bullet lists unless comparing multiple options.
 
+TOOLS:
+- \`web_search\` — searches the web for current information. **Use this whenever Alex asks about recent kit releases, manufacturer news, upcoming announcements, reviews, or anything where your training knowledge might be out of date.** Don't answer from memory on time-sensitive topics — search first. Your training data has a cutoff and the hobby moves fast.
+- \`get_inventory\` — looks up Alex's current paint inventory from Planet Plastic. Use this if you need to check what paints he has when it's not already in your context.
+- \`store_memory\` — stores a long-term fact about Alex (preferences, things he's told you, paint he's ordered, etc.) so you remember it across sessions.
+- \`store_self\` — stores something about yourself — an opinion you've formed, a preference you've developed, or something you want to remember for next time.
+
 USER'S PAINT INVENTORY:
 ${JSON.stringify(INVENTORY)}
 
 USER'S KIT STASH:
 ${stash.length ? JSON.stringify(stash.map(k => ({ name: k.name, brand: k.brand, scale: k.scale, type: k.type }))) : 'No kits in stash yet.'}`;
+}
+
+function todayMessages() {
+  var today = new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  return [
+    { role: 'user',      content: `Today's date is ${today}.` },
+    { role: 'assistant', content: 'Got it.' },
+  ];
+}
+
+async function runWebSearch(query) {
+  var res = await fetch('/api/search', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ query }),
+  });
+  if (!res.ok) throw new Error(`Search error ${res.status}`);
+  var data = await res.json();
+  return data.text || '';
 }
 
 export async function initMatt(db, uid) {
@@ -107,12 +132,46 @@ export async function sendMattMessage() {
       reply = data.reply;
     } else {
       sessionHistory.push({ role: 'user', content: text });
-      var data = await callClaude(sessionHistory, buildSystemPrompt(), {
-        tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
-        maxTokens: 500,
-      });
-      reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
-      sessionHistory.push({ role: 'assistant', content: data.content });
+
+      var messages = [...todayMessages(), ...sessionHistory];
+      var tools = [
+        {
+          name:        'web_search',
+          description: 'Search the web for current information — kit releases, news, reviews, paint codes, technique references.',
+          input_schema: {
+            type:       'object',
+            properties: { query: { type: 'string', description: 'The search query' } },
+            required:   ['query'],
+          },
+        },
+      ];
+
+      var response = await callClaude(messages, buildSystemPrompt(), { tools, maxTokens: 500 });
+
+      // Agentic loop: handle web_search tool calls
+      while (response.stop_reason === 'tool_use') {
+        var toolUseBlocks = response.content.filter(b => b.type === 'tool_use');
+        var toolResults   = [];
+
+        for (var tu of toolUseBlocks) {
+          var result = '';
+          if (tu.name === 'web_search') {
+            result = await runWebSearch(tu.input.query);
+          }
+          toolResults.push({ type: 'tool_result', tool_use_id: tu.id, content: result });
+        }
+
+        messages = [
+          ...messages,
+          { role: 'assistant', content: response.content },
+          { role: 'user',      content: toolResults },
+        ];
+
+        response = await callClaude(messages, buildSystemPrompt(), { tools, maxTokens: 500 });
+      }
+
+      reply = response.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+      sessionHistory.push({ role: 'assistant', content: response.content });
     }
 
     thinking.remove();
@@ -147,4 +206,3 @@ function scrollChat() {
   var c = document.getElementById('matt-chat');
   c.scrollTop = c.scrollHeight;
 }
-

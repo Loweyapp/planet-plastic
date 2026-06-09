@@ -56,7 +56,7 @@ Both modes share a single fixed input bar (`#chat-input-bar`, `#chat-input`, `#c
 - `PREVIEW_MODE` in `firebase.js` detects sandboxed iframes and skips Firebase auth
 - `__ANTHROPIC_KEY__` injected at build time by Vite from `VITE_ANTHROPIC_API_KEY` env var in Vercel
 - **Version number** hardcoded in `index.html` header — bump with every push
-- Current version: **v1.2.21**
+- Current version: **v1.2.22**
 - Run `npx vite build` before committing to confirm zero errors
 
 ## Firestore data model
