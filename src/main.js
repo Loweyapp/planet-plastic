@@ -4,7 +4,7 @@ import { initPicker }                      from './views/picker.js';
 import { initPaints }                      from './views/paints.js';
 import { initCollection }                  from './views/collection.js';
 import { initMatt, sendMattMessage, linkMatt, unlinkMatt } from './views/matt.js';
-import { setPendingAttachment, clearPendingAttachment, uploadAttachment } from './attachment.js';
+import { setPendingAttachment, clearPendingAttachment, resizeAndEncode } from './attachment.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 var loadingTimer = setTimeout(function () {
@@ -129,31 +129,34 @@ function initChatInput() {
     fileInput.click();
   });
 
-  // File selected → read as base64 and store
+  // File selected → resize and store as base64
   fileInput.addEventListener('change', async function (e) {
     var file = e.target.files[0];
     if (!file) return;
-    var allowed = ['image/jpeg','image/png','image/gif','image/webp','application/pdf'];
+
+    // PDFs can't be sent directly — guide the user to screenshot instead
+    if (file.type === 'application/pdf') {
+      alert('PDFs can\'t be attached directly.\n\nTip: take a screenshot of the colour callout page and attach that instead — it works great for checking paint lists!');
+      fileInput.value = '';
+      return;
+    }
+
+    var allowed = ['image/jpeg','image/png','image/gif','image/webp'];
     if (!allowed.includes(file.type)) {
-      alert('Attach an image (JPG, PNG, WEBP, GIF) or a PDF.');
+      alert('Attach an image (JPG, PNG, WEBP, or GIF).');
       fileInput.value = '';
       return;
     }
-    // 10 MB limit — larger files cause mobile fetch failures
-    if (file.size > 10 * 1024 * 1024) {
-      alert('File is too large (max 10 MB). Try a smaller image or a compressed PDF.');
-      fileInput.value = '';
-      return;
-    }
+
     try {
-      showAttachPreview('Uploading…');
-      var att = await uploadAttachment(file);
-      setPendingAttachment(att);
+      showAttachPreview('Processing…');
+      var data = await resizeAndEncode(file);
+      setPendingAttachment({ name: file.name, mediaType: 'image/jpeg', data });
       showAttachPreview(file.name);
-    } catch (e) {
+    } catch (err) {
       clearPendingAttachment();
       hideAttachPreview();
-      alert('Could not upload file: ' + e.message);
+      alert('Could not read image: ' + err.message);
     }
     fileInput.value = '';
   });
