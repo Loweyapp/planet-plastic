@@ -1,6 +1,7 @@
 import { callClaude } from '../api.js';
 import { INVENTORY }  from '../data/inventory.js';
 import { esc, fmt }   from '../utils.js';
+import { getPendingAttachment, clearPendingAttachment, attachmentContentBlock } from '../attachment.js';
 
 var history = [];
 
@@ -29,22 +30,33 @@ export function initAdviser() {
 export async function sendAdviserMessage() {
   var input = document.getElementById('chat-input');
   var text  = input.value.trim();
-  if (!text) return;
+  var att   = getPendingAttachment();
+  if (!text && !att) return;
 
   var btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   input.value  = '';
   input.style.height = 'auto';
+  clearPendingAttachment();
 
-  appendMessage('user', text);
-  history.push({ role: 'user', content: text });
+  // Build message content — text only, or text + attachment
+  var userContent;
+  if (att) {
+    userContent = [attachmentContentBlock(att)];
+    if (text) userContent.push({ type: 'text', text });
+  } else {
+    userContent = text;
+  }
+
+  appendMessage('user', text, att);
+  history.push({ role: 'user', content: userContent });
   var thinking = appendThinking();
   scrollChat();
 
   try {
     var data  = await callClaude(history, SYSTEM_PROMPT, {
       tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
-      maxTokens: 400,
+      maxTokens: 600,
     });
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
     thinking.remove();
@@ -59,11 +71,20 @@ export async function sendAdviserMessage() {
   scrollChat();
 }
 
-function appendMessage(role, text) {
+function appendMessage(role, text, att) {
   var chat = document.getElementById('chat-area');
   var row  = document.createElement('div');
   row.className = `message-row ${role}`;
-  row.innerHTML = `<div class="bubble">${fmt(text)}</div>`;
+  var inner = '';
+  if (att) {
+    if (att.mediaType === 'application/pdf') {
+      inner += `<div class="bubble-attachment pdf">📄 ${esc(att.name)}</div>`;
+    } else {
+      inner += `<img class="bubble-image" src="data:${att.mediaType};base64,${att.data}" alt="${esc(att.name)}">`;
+    }
+  }
+  if (text) inner += `<div class="bubble">${fmt(text)}</div>`;
+  row.innerHTML = inner;
   chat.appendChild(row);
 }
 

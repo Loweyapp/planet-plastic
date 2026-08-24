@@ -206,10 +206,19 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 .matt-header { padding: 16px 20px 10px; flex-shrink: 0; border-bottom: 1px solid var(--border); background: var(--surface); }
 .matt-title { font-family: var(--display); font-size: 17px; font-weight: 700; }
 .matt-sub { font-size: 12px; color: var(--text3); margin-top: 1px; }
-.matt-input-bar { position: fixed; bottom: calc(56px + var(--safe-bottom)); left: 0; right: 0; z-index: 100; display: flex; align-items: flex-end; gap: 10px; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--border); }
+.matt-input-bar { position: fixed; bottom: calc(56px + var(--safe-bottom)); left: 0; right: 0; z-index: 100; display: flex; flex-direction: column; gap: 6px; padding: 10px 16px; background: var(--surface); border-top: 1px solid var(--border); }
+.chat-input-row { display: flex; align-items: flex-end; gap: 8px; }
 .matt-input-bar textarea { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 20px; font-family: var(--sans); font-size: 15px; color: var(--text); padding: 10px 14px; resize: none; outline: none; min-height: 40px; max-height: 112px; line-height: 1.5; }
 .matt-input-bar textarea:focus { border-color: var(--accent); }
 .matt-input-bar textarea::placeholder { color: var(--text3); }
+.attach-btn { width: 36px; height: 36px; background: transparent; border: 1px solid var(--border); border-radius: 50%; color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background 0.15s; }
+.attach-btn:active { background: var(--bg); }
+.attach-btn svg { width: 18px; height: 18px; fill: currentColor; }
+.chat-attach-preview { display: flex; align-items: center; gap: 8px; background: var(--accent-light); border-radius: 8px; padding: 6px 10px; font-size: 13px; color: var(--accent); }
+.chat-attach-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chat-attach-remove { background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 14px; padding: 0 2px; line-height: 1; flex-shrink: 0; }
+.bubble-image { max-width: 220px; max-height: 180px; border-radius: 12px; display: block; margin-bottom: 4px; object-fit: cover; }
+.bubble-attachment { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; font-size: 13px; color: var(--text2); margin-bottom: 4px; max-width: 220px; }
 #matt-chat { padding-bottom: 80px; }
 
 /* ── KIT DETAIL SHEET ── */
@@ -283,7 +292,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 <div id="app-screen">
   <div class="header">
     <div class="header-top">
-      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.2.26</span></div>
+      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.2.27</span></div>
       <div class="user-avatar" id="user-avatar"></div>
       <button class="icon-btn" id="settings-btn" title="Settings">
         <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-1l2.16-1.68c.19-.15.24-.42.12-.64l-2.04-3.54c-.12-.22-.39-.3-.61-.22l-2.55 1.02c-.53-.4-1.09-.73-1.71-.98l-.38-2.71C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.71c-.62.25-1.18.58-1.71.98L4.87 5.09c-.22-.08-.49 0-.61.22L2.22 8.85c-.12.22-.07.49.12.64L4.5 11.17c-.04.34-.07.67-.07 1s.03.65.07.98L2.34 14.83c-.19.15-.24.42-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.53.4 1.09.73 1.71.98l.38 2.71c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.71c.62-.25 1.18-.58 1.71-.98l2.55 1.02c.22.08.49 0 .61-.22l2.04-3.54c.12-.22.07-.49-.12-.64l-2.16-1.66z"/></svg>
@@ -399,10 +408,20 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 
 <!-- CHAT INPUT — fixed above bottom nav, shown when Chat tab is active -->
 <div class="matt-input-bar" id="chat-input-bar">
-  <textarea id="chat-input" placeholder="Ask about paints…" rows="1"></textarea>
-  <button class="send-btn" id="chat-send-btn">
-    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
-  </button>
+  <div class="chat-attach-preview" id="chat-attach-preview" style="display:none">
+    <span class="chat-attach-name" id="chat-attach-name"></span>
+    <button class="chat-attach-remove" id="chat-attach-remove" aria-label="Remove attachment">✕</button>
+  </div>
+  <div class="chat-input-row">
+    <button class="attach-btn" id="chat-attach-btn" aria-label="Attach file">
+      <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+    </button>
+    <textarea id="chat-input" placeholder="Ask about paints…" rows="1"></textarea>
+    <button class="send-btn" id="chat-send-btn">
+      <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
+    </button>
+  </div>
+  <input type="file" id="chat-file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
 </div>
 
 <!-- BOTTOM NAV — fixed outside app-screen so nothing can ever cover it -->

@@ -2,6 +2,7 @@ import { callClaude }              from '../api.js';
 import { INVENTORY }               from '../data/inventory.js';
 import { esc, fmt }                from '../utils.js';
 import { getStashKits, onKitChange } from './collection.js';
+import { getPendingAttachment, clearPendingAttachment, attachmentContentBlock } from '../attachment.js';
 
 var sessionHistory = [];
 var _db     = null;
@@ -98,21 +99,24 @@ function updateLinkStatus() {
 export async function sendMattMessage() {
   var input = document.getElementById('chat-input');
   var text  = input.value.trim();
-  if (!text) return;
+  var att   = getPendingAttachment();
+  if (!text && !att) return;
 
   var btn = document.getElementById('chat-send-btn');
   btn.disabled = true;
   input.value  = '';
   input.style.height = 'auto';
+  clearPendingAttachment();
 
-  appendMessage('user', text);
+  appendMessage('user', text, att);
   var thinking = appendThinking();
   scrollChat();
 
   try {
     var reply;
 
-    if (_chatId) {
+    // Attachments always go direct to the API (Telegram can't receive base64 images)
+    if (_chatId && !att) {
       var res = await fetch('/api/matt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -123,10 +127,17 @@ export async function sendMattMessage() {
       if (data.error) throw new Error(data.error);
       reply = data.reply;
     } else {
-      sessionHistory.push({ role: 'user', content: text });
+      var userContent;
+      if (att) {
+        userContent = [attachmentContentBlock(att)];
+        if (text) userContent.push({ type: 'text', text });
+      } else {
+        userContent = text;
+      }
+      sessionHistory.push({ role: 'user', content: userContent });
       var data = await callClaude(sessionHistory, buildSystemPrompt(), {
         tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
-        maxTokens: 500,
+        maxTokens: 600,
       });
       reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
       sessionHistory.push({ role: 'assistant', content: data.content });
@@ -143,11 +154,20 @@ export async function sendMattMessage() {
   scrollChat();
 }
 
-function appendMessage(role, text) {
+function appendMessage(role, text, att) {
   var chat = document.getElementById('matt-chat');
   var row  = document.createElement('div');
   row.className = `message-row ${role}`;
-  row.innerHTML = `<div class="bubble">${fmt(text)}</div>`;
+  var inner = '';
+  if (att) {
+    if (att.mediaType === 'application/pdf') {
+      inner += `<div class="bubble-attachment pdf">📄 ${esc(att.name)}</div>`;
+    } else {
+      inner += `<img class="bubble-image" src="data:${att.mediaType};base64,${att.data}" alt="${esc(att.name)}">`;
+    }
+  }
+  if (text) inner += `<div class="bubble">${fmt(text)}</div>`;
+  row.innerHTML = inner;
   chat.appendChild(row);
 }
 

@@ -4,6 +4,7 @@ import { initPicker }                      from './views/picker.js';
 import { initPaints }                      from './views/paints.js';
 import { initCollection }                  from './views/collection.js';
 import { initMatt, sendMattMessage, linkMatt, unlinkMatt } from './views/matt.js';
+import { setPendingAttachment, clearPendingAttachment, readFileAsBase64 } from './attachment.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 var loadingTimer = setTimeout(function () {
@@ -104,8 +105,9 @@ function showApp(db, user, firebase) {
 var activeChatMode = 'adviser';
 
 function initChatInput() {
-  var input = document.getElementById('chat-input');
-  var btn   = document.getElementById('chat-send-btn');
+  var input     = document.getElementById('chat-input');
+  var btn       = document.getElementById('chat-send-btn');
+  var fileInput = document.getElementById('chat-file-input');
 
   document.getElementById('chat-mode-bar').addEventListener('click', function (e) {
     var modeBtn = e.target.closest('.chat-mode-btn');
@@ -121,9 +123,52 @@ function initChatInput() {
     input.style.height = 'auto';
     input.style.height = Math.min(input.scrollHeight, 120) + 'px';
   });
+
+  // Attachment button → open file picker
+  document.getElementById('chat-attach-btn').addEventListener('click', function () {
+    fileInput.click();
+  });
+
+  // File selected → read as base64 and store
+  fileInput.addEventListener('change', async function (e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var allowed = ['image/jpeg','image/png','image/gif','image/webp','application/pdf'];
+    if (!allowed.includes(file.type)) {
+      alert('Attach an image (JPG, PNG, WEBP, GIF) or a PDF.');
+      fileInput.value = '';
+      return;
+    }
+    try {
+      var data = await readFileAsBase64(file);
+      setPendingAttachment({ name: file.name, mediaType: file.type, data });
+      showAttachPreview(file.name);
+    } catch (e) {
+      alert('Could not read file.');
+    }
+    fileInput.value = '';
+  });
+
+  // Remove attachment
+  document.getElementById('chat-attach-remove').addEventListener('click', function () {
+    clearPendingAttachment();
+    hideAttachPreview();
+  });
+}
+
+function showAttachPreview(name) {
+  var chip = document.getElementById('chat-attach-preview');
+  document.getElementById('chat-attach-name').textContent = name;
+  chip.style.display = 'flex';
+}
+
+function hideAttachPreview() {
+  document.getElementById('chat-attach-preview').style.display = 'none';
+  document.getElementById('chat-attach-name').textContent = '';
 }
 
 function dispatchChatSend() {
+  hideAttachPreview();
   if (activeChatMode === 'adviser') sendAdviserMessage();
   else sendMattMessage();
 }
