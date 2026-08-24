@@ -54,7 +54,7 @@ export async function sendAdviserMessage() {
   scrollChat();
 
   try {
-    var callOpts = { maxTokens: 800 };
+    var callOpts = { maxTokens: 4000 };
     if (!att) callOpts.tools = [{ type: 'web_search_20260209', name: 'web_search' }];
     var data  = await callClaude(history, SYSTEM_PROMPT, callOpts);
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
