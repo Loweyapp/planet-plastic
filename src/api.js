@@ -5,6 +5,30 @@ var KEY = typeof __ANTHROPIC_KEY__ !== 'undefined' ? __ANTHROPIC_KEY__ : '';
 
 export function hasKey() { return KEY.length > 0; }
 
+// Upload a File object directly to Anthropic's Files API from the browser.
+// Uses FormData (multipart) — no base64, no size limit from JSON encoding.
+// Returns { fileId, name, mediaType }.
+export async function uploadFileToAnthropic(file) {
+  if (!KEY) throw new Error('No API key configured.');
+  var formData = new FormData();
+  formData.append('file', file, file.name);
+
+  var resp = await fetch('https://api.anthropic.com/v1/files', {
+    method: 'POST',
+    headers: {
+      'x-api-key': KEY,
+      'anthropic-version': '2023-06-01',
+      'anthropic-beta': 'files-api-2025-04-14',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: formData,
+  });
+
+  var data = await resp.json().catch(function () { return {}; });
+  if (!resp.ok) throw new Error(data.error?.message || `Upload failed (HTTP ${resp.status})`);
+  return { fileId: data.id, name: file.name, mediaType: file.type };
+}
+
 export async function callClaude(messages, systemPrompt, opts) {
   if (!KEY) throw new Error('No API key — add VITE_ANTHROPIC_API_KEY to Vercel environment variables.');
 

@@ -16,21 +16,11 @@ export function clearPendingAttachment() {
   _pending = null;
 }
 
-// Upload a File object to Anthropic via our serverless proxy.
-// Returns { name, mediaType, fileId } on success.
+// Upload a File object directly to Anthropic's Files API (browser → Anthropic).
+// No Vercel proxy involved — avoids serverless body size limits entirely.
 export async function uploadAttachment(file) {
-  var resp = await fetch('/api/upload-file', {
-    method: 'POST',
-    headers: {
-      'Content-Type': file.type,
-      'x-filename': file.name,
-      'x-mime-type': file.type,
-    },
-    body: file,  // Raw bytes — no base64, no JSON wrapping
-  });
-  var data = await resp.json();
-  if (!resp.ok) throw new Error(data.error || `Upload failed (${resp.status})`);
-  return { name: file.name, mediaType: file.type, fileId: data.fileId };
+  var { uploadFileToAnthropic } = await import('./api.js');
+  return uploadFileToAnthropic(file);
 }
 
 // Build a Claude content block from a pending attachment
