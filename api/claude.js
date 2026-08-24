@@ -1,5 +1,11 @@
 // Serverless proxy for Anthropic API — avoids browser CORS issues,
 // especially when using anthropic-beta headers (e.g. PDF support).
+
+// Raise Vercel's default 4.5MB body limit to handle PDF payloads
+export const config = {
+  api: { bodyParser: { sizeLimit: '20mb' } },
+};
+
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
