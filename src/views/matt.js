@@ -135,11 +135,11 @@ export async function sendMattMessage() {
         userContent = text;
       }
       sessionHistory.push({ role: 'user', content: userContent });
-      var data = await callClaude(sessionHistory, buildSystemPrompt(), {
-        tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
-        maxTokens: 600,
-      });
+      var mattOpts = { maxTokens: 800 };
+      if (!att) mattOpts.tools = [{ type: 'web_search_20260209', name: 'web_search' }];
+      var data = await callClaude(sessionHistory, buildSystemPrompt(), mattOpts);
       reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+      if (!reply) reply = '_(no text response — please try again)_';
       sessionHistory.push({ role: 'assistant', content: data.content });
     }
 

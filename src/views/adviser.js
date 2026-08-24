@@ -54,11 +54,11 @@ export async function sendAdviserMessage() {
   scrollChat();
 
   try {
-    var data  = await callClaude(history, SYSTEM_PROMPT, {
-      tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
-      maxTokens: 600,
-    });
+    var callOpts = { maxTokens: 800 };
+    if (!att) callOpts.tools = [{ type: 'web_search_20260209', name: 'web_search' }];
+    var data  = await callClaude(history, SYSTEM_PROMPT, callOpts);
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
+    if (!reply) reply = '_(no text response — please try again)_';
     thinking.remove();
     history.push({ role: 'assistant', content: data.content });
     appendMessage('assistant', reply);
