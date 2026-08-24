@@ -1,7 +1,7 @@
-import { callClaude }   from '../api.js';
-import { INVENTORY }    from '../data/inventory.js';
-import { esc, fmt }     from '../utils.js';
-import { getStashKits } from './collection.js';
+import { callClaude }              from '../api.js';
+import { INVENTORY }               from '../data/inventory.js';
+import { esc, fmt }                from '../utils.js';
+import { getStashKits, onKitChange } from './collection.js';
 
 var sessionHistory = [];
 var _db     = null;
@@ -33,6 +33,20 @@ USER'S KIT STASH:
 ${stash.length ? JSON.stringify(stash.map(k => ({ name: k.name, brand: k.brand, scale: k.scale, type: k.type }))) : 'No kits in stash yet.'}`;
 }
 
+async function syncStash() {
+  if (!_chatId) return;
+  var stash = getStashKits().map(k => ({ name: k.name, brand: k.brand, scale: k.scale, type: k.type }));
+  try {
+    await fetch('/api/stash', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chatId: _chatId, stash }),
+    });
+  } catch (e) {
+    console.warn('Matt: stash sync failed', e);
+  }
+}
+
 export async function initMatt(db, uid) {
   _db  = db;
   _uid = uid;
@@ -46,6 +60,8 @@ export async function initMatt(db, uid) {
     }
   }
 
+  onKitChange(syncStash);
+  syncStash();
   updateLinkStatus();
   // Input wiring is handled by main.js (shared input bar)
 }
@@ -57,6 +73,7 @@ export async function linkMatt(chatId) {
   if (_db && _uid) {
     await _db.collection('users').doc(_uid).set({ telegramChatId: chatId }, { merge: true });
   }
+  syncStash();
   updateLinkStatus();
 }
 

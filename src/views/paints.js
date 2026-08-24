@@ -6,6 +6,7 @@ var activeFilter = 'All';
 
 export function initPaints() {
   document.getElementById('paints-search-input').addEventListener('input', renderPaints);
+  document.getElementById('paints-export-btn').addEventListener('click', exportPaintsCSV);
   document.getElementById('paints-filter-row').addEventListener('click', function (e) {
     var chip = e.target.closest('.filter-chip');
     if (!chip) return;
@@ -63,4 +64,20 @@ export function renderPaints() {
   });
   html += `<div class="paints-count">${items.length} item${items.length !== 1 ? 's' : ''}</div>`;
   list.innerHTML = html;
+}
+
+// ── CSV export ────────────────────────────────────────────────────────────────
+function exportPaintsCSV() {
+  var headers = ['Brand', 'Code', 'Product Name', 'Category', 'Finish', 'Quantity'];
+  var rows = INVENTORY.map(item => [
+    item['Brand'] || '', item['Code'] || '', item['Product Name'] || '',
+    item['Category'] || '', item['Finish'] || '', item['Quantity'] || 1,
+  ]);
+  var csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'planet-plastic-paints.csv';
+  a.click();
+  URL.revokeObjectURL(a.href);
 }

@@ -4,6 +4,9 @@ var _db  = null;
 var _uid = null;
 var _unsubscribe = null;
 var activeTab = 'stash';
+var _onKitChange = null;
+
+export function onKitChange(fn) { _onKitChange = fn; }
 
 // In-memory cache keyed by Firestore doc id
 var kitsById = {};
@@ -23,6 +26,7 @@ export function initCollection(db, uid) {
 
   document.getElementById('coll-search-input').addEventListener('input', renderCollection);
   document.getElementById('csv-file-input').addEventListener('change', handleCSVImport);
+  document.getElementById('coll-export-btn').addEventListener('click', exportKitsCSV);
   document.getElementById('url-import-btn').addEventListener('click', handleUrlImport);
   document.getElementById('url-import-input').addEventListener('keydown', function (e) {
     if (e.key === 'Enter') handleUrlImport();
@@ -66,6 +70,7 @@ function subscribeToKits() {
       // Persist to localStorage as offline cache
       localStorage.setItem('pp_kits', JSON.stringify(kitsById));
       renderCollection();
+      if (_onKitChange) _onKitChange();
     }, function (err) {
       console.warn('Firestore snapshot error:', err);
       // Fall back to cache
@@ -342,4 +347,28 @@ export function renderCollection() {
       </div>
     </div>`;
   }).join('') + `<div class="coll-count">${items.length} kit${items.length !== 1 ? 's' : ''}</div>`;
+}
+
+// ── CSV export ────────────────────────────────────────────────────────────────
+function exportKitsCSV() {
+  var kits = Object.values(kitsById);
+  if (!kits.length) { alert('No kits to export.'); return; }
+  var headers = ['Name', 'Brand', 'Scale', 'Type', 'Kit Number', 'Status', 'Source URL'];
+  var rows = kits.map(k => [
+    k.name || '', k.brand || '', k.scale || '', k.type || '',
+    k.kitNo || '',
+    { stash: 'Stash', wip: 'In Progress', done: 'Completed', wish: 'Wishlist' }[k.status] || k.status || '',
+    k.sourceUrl || '',
+  ]);
+  downloadCSV([headers, ...rows], 'planet-plastic-kits.csv');
+}
+
+function downloadCSV(rows, filename) {
+  var csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+  var blob = new Blob([csv], { type: 'text/csv' });
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
 }
