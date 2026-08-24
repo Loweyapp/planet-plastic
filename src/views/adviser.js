@@ -43,7 +43,7 @@ export async function sendAdviserMessage() {
 
   try {
     var data  = await callClaude(history, SYSTEM_PROMPT, {
-      tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
+      tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
       maxTokens: 400,
     });
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();

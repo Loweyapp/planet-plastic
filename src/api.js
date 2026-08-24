@@ -9,7 +9,7 @@ export async function callClaude(messages, systemPrompt, opts) {
   if (!KEY) throw new Error('No API key — add VITE_ANTHROPIC_API_KEY to Vercel environment variables.');
 
   var body = {
-    model: 'claude-sonnet-4-20250514',
+    model: 'claude-sonnet-5',
     max_tokens: opts?.maxTokens || 1000,
     messages: messages,
   };

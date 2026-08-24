@@ -108,7 +108,7 @@ export async function sendMattMessage() {
     } else {
       sessionHistory.push({ role: 'user', content: text });
       var data = await callClaude(sessionHistory, buildSystemPrompt(), {
-        tools:     [{ type: 'web_search_20250305', name: 'web_search' }],
+        tools:     [{ type: 'web_search_20260209', name: 'web_search' }],
         maxTokens: 500,
       });
       reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
