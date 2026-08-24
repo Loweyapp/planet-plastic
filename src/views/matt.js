@@ -2,7 +2,7 @@ import { callClaude }              from '../api.js';
 import { INVENTORY }               from '../data/inventory.js';
 import { esc, fmt }                from '../utils.js';
 import { getStashKits, onKitChange } from './collection.js';
-import { getPendingAttachment, clearPendingAttachment, attachmentContentBlock } from '../attachment.js';
+import { getPendingAttachment, clearPendingAttachment, attachmentContentBlocks } from '../attachment.js';
 
 var sessionHistory = [];
 var _db     = null;
@@ -129,7 +129,7 @@ export async function sendMattMessage() {
     } else {
       var userContent;
       if (att) {
-        userContent = [attachmentContentBlock(att)];
+        userContent = [...attachmentContentBlocks(att)];
         if (text) userContent.push({ type: 'text', text });
       } else {
         userContent = text;
@@ -160,10 +160,10 @@ function appendMessage(role, text, att) {
   row.className = `message-row ${role}`;
   var inner = '';
   if (att) {
-    if (att.mediaType === 'application/pdf') {
-      inner += `<div class="bubble-attachment pdf">📄 ${esc(att.name)}</div>`;
-    } else if (att.data) {
-      inner += `<img class="bubble-image" src="data:${att.mediaType};base64,${att.data}" alt="${esc(att.name)}">`;
+    if (att.type === 'pdf-pages') {
+      inner += `<div class="bubble-attachment pdf">📄 ${esc(att.name)} (${att.images.length} page${att.images.length > 1 ? 's' : ''})</div>`;
+    } else if (att.type === 'image' && att.data) {
+      inner += `<img class="bubble-image" src="data:image/jpeg;base64,${att.data}" alt="${esc(att.name)}">`;
     } else {
       inner += `<div class="bubble-attachment">🖼️ ${esc(att.name)}</div>`;
     }

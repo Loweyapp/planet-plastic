@@ -5,6 +5,7 @@ import { initPaints }                      from './views/paints.js';
 import { initCollection }                  from './views/collection.js';
 import { initMatt, sendMattMessage, linkMatt, unlinkMatt } from './views/matt.js';
 import { setPendingAttachment, clearPendingAttachment, resizeAndEncode } from './attachment.js';
+import { openPdfPicker } from './pdfpicker.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 var loadingTimer = setTimeout(function () {
@@ -134,16 +135,19 @@ function initChatInput() {
     var file = e.target.files[0];
     if (!file) return;
 
-    // PDFs can't be sent directly — guide the user to screenshot instead
     if (file.type === 'application/pdf') {
-      alert('PDFs can\'t be attached directly.\n\nTip: take a screenshot of the colour callout page and attach that instead — it works great for checking paint lists!');
+      // Open page picker — user selects which pages to send
+      openPdfPicker(file, function (att) {
+        setPendingAttachment({ type: 'pdf-pages', name: att.name, images: att.images });
+        showAttachPreview('📄 ' + att.name + ' (' + att.images.length + ' page' + (att.images.length > 1 ? 's' : '') + ')');
+      });
       fileInput.value = '';
       return;
     }
 
     var allowed = ['image/jpeg','image/png','image/gif','image/webp'];
     if (!allowed.includes(file.type)) {
-      alert('Attach an image (JPG, PNG, WEBP, or GIF).');
+      alert('Attach an image (JPG, PNG, WEBP, or GIF) or a PDF.');
       fileInput.value = '';
       return;
     }
@@ -151,7 +155,7 @@ function initChatInput() {
     try {
       showAttachPreview('Processing…');
       var data = await resizeAndEncode(file);
-      setPendingAttachment({ name: file.name, mediaType: 'image/jpeg', data });
+      setPendingAttachment({ type: 'image', name: file.name, mediaType: 'image/jpeg', data });
       showAttachPreview(file.name);
     } catch (err) {
       clearPendingAttachment();

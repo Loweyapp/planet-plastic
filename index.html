@@ -174,6 +174,21 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 .coll-search input::placeholder { color: var(--text3); }
 .coll-search svg { width: 15px; height: 15px; fill: var(--text3); flex-shrink: 0; }
 .import-btn { background: var(--accent); border: none; border-radius: 20px; color: #fff; font-family: var(--display); font-size: 12px; font-weight: 500; padding: 8px 14px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+/* ── PDF page picker ── */
+.pdf-picker-overlay { position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.5); display: flex; align-items: flex-end; }
+.pdf-picker-sheet { background: var(--surface); border-radius: 20px 20px 0 0; width: 100%; max-height: 80vh; display: flex; flex-direction: column; }
+.pdf-picker-header { display: flex; align-items: center; padding: 16px 16px 8px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.pdf-picker-title { flex: 1; font-family: var(--display); font-size: 15px; font-weight: 600; color: var(--text); }
+.pdf-picker-cancel { background: transparent; border: none; font-size: 18px; color: var(--text3); cursor: pointer; padding: 4px 8px; }
+.pdf-picker-grid { flex: 1; overflow-y: auto; padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; -webkit-overflow-scrolling: touch; }
+.pdf-picker-grid::-webkit-scrollbar { display: none; }
+.pdf-thumb { background: var(--bg); border: 2px solid var(--border); border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; display: flex; flex-direction: column; align-items: center; }
+.pdf-thumb.selected { border-color: var(--accent); }
+.pdf-thumb canvas { width: 100%; display: block; }
+.pdf-thumb span { font-size: 11px; color: var(--text3); padding: 3px 0; }
+.pdf-picker-footer { padding: 12px 16px calc(12px + var(--safe-bottom)); border-top: 1px solid var(--border); flex-shrink: 0; }
+.pdf-picker-confirm { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 12px; font-family: var(--display); font-size: 15px; font-weight: 500; padding: 14px; cursor: pointer; }
+.pdf-picker-confirm:disabled { background: var(--border); color: var(--text3); cursor: default; }
 .export-btn { background: transparent; border: 1px solid var(--border); border-radius: 20px; color: var(--text2); font-family: var(--display); font-size: 12px; font-weight: 500; padding: 8px 14px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 .kit-list { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 .kit-list::-webkit-scrollbar { display: none; }
@@ -292,7 +307,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
 <div id="app-screen">
   <div class="header">
     <div class="header-top">
-      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.2.33</span></div>
+      <div class="header-wordmark">Planet <span>Plastic</span><span class="header-version">v1.2.34</span></div>
       <div class="user-avatar" id="user-avatar"></div>
       <button class="icon-btn" id="settings-btn" title="Settings">
         <svg viewBox="0 0 24 24"><path d="M12 15.5A3.5 3.5 0 018.5 12 3.5 3.5 0 0112 8.5a3.5 3.5 0 013.5 3.5 3.5 3.5 0 01-3.5 3.5m7.43-2.92c.04-.32.07-.64.07-.98 0-.34-.03-.66-.07-1l2.16-1.68c.19-.15.24-.42.12-.64l-2.04-3.54c-.12-.22-.39-.3-.61-.22l-2.55 1.02c-.53-.4-1.09-.73-1.71-.98l-.38-2.71C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.71c-.62.25-1.18.58-1.71.98L4.87 5.09c-.22-.08-.49 0-.61.22L2.22 8.85c-.12.22-.07.49.12.64L4.5 11.17c-.04.34-.07.67-.07 1s.03.65.07.98L2.34 14.83c-.19.15-.24.42-.12.64l2.04 3.54c.12.22.39.3.61.22l2.55-1.02c.53.4 1.09.73 1.71.98l.38 2.71c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.71c.62-.25 1.18-.58 1.71-.98l2.55 1.02c.22.08.49 0 .61-.22l2.04-3.54c.12-.22.07-.49-.12-.64l-2.16-1.66z"/></svg>
@@ -421,7 +436,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--sans); disp
       <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
     </button>
   </div>
-  <input type="file" id="chat-file-input" accept="image/jpeg,image/png,image/webp,image/gif" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
+  <input type="file" id="chat-file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" style="position:absolute;width:1px;height:1px;opacity:0;overflow:hidden">
 </div>
 
 <!-- BOTTOM NAV — fixed outside app-screen so nothing can ever cover it -->
