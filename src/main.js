@@ -4,7 +4,7 @@ import { initPicker }                      from './views/picker.js';
 import { initPaints }                      from './views/paints.js';
 import { initCollection }                  from './views/collection.js';
 import { initMatt, sendMattMessage, linkMatt, unlinkMatt } from './views/matt.js';
-import { setPendingAttachment, clearPendingAttachment, readFileAsBase64 } from './attachment.js';
+import { setPendingAttachment, clearPendingAttachment, uploadAttachment } from './attachment.js';
 
 // ── Boot ──────────────────────────────────────────────────────────────────────
 var loadingTimer = setTimeout(function () {
@@ -146,11 +146,14 @@ function initChatInput() {
       return;
     }
     try {
-      var data = await readFileAsBase64(file);
-      setPendingAttachment({ name: file.name, mediaType: file.type, data });
+      showAttachPreview('Uploading…');
+      var att = await uploadAttachment(file);
+      setPendingAttachment(att);
       showAttachPreview(file.name);
     } catch (e) {
-      alert('Could not read file.');
+      clearPendingAttachment();
+      hideAttachPreview();
+      alert('Could not upload file: ' + e.message);
     }
     fileInput.value = '';
   });

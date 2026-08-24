@@ -1,7 +1,8 @@
 // Shared pending-attachment state for the chat input bar.
-// Both adviser.js and matt.js read from here before sending.
+// Files are uploaded to Anthropic's Files API on selection; the
+// pending attachment holds the resulting fileId (not raw base64).
 
-var _pending = null;  // { name, mediaType, data } | null
+var _pending = null;  // { name, mediaType, fileId } | { name, mediaType, data } | null
 
 export function setPendingAttachment(file) {
   _pending = file;
@@ -15,18 +16,33 @@ export function clearPendingAttachment() {
   _pending = null;
 }
 
-// Read a File object → base64 data string
-export function readFileAsBase64(file) {
-  return new Promise(function (resolve, reject) {
-    var reader = new FileReader();
-    reader.onload  = function (e) { resolve(e.target.result.split(',')[1]); };
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
+// Upload a File object to Anthropic via our serverless proxy.
+// Returns { name, mediaType, fileId } on success.
+export async function uploadAttachment(file) {
+  var resp = await fetch('/api/upload-file', {
+    method: 'POST',
+    headers: {
+      'Content-Type': file.type,
+      'x-filename': file.name,
+      'x-mime-type': file.type,
+    },
+    body: file,  // Raw bytes — no base64, no JSON wrapping
   });
+  var data = await resp.json();
+  if (!resp.ok) throw new Error(data.error || `Upload failed (${resp.status})`);
+  return { name: file.name, mediaType: file.type, fileId: data.fileId };
 }
 
-// Build a Claude content block for the attachment
+// Build a Claude content block from a pending attachment
 export function attachmentContentBlock(att) {
+  // Prefer fileId (Files API) over raw base64 data
+  if (att.fileId) {
+    if (att.mediaType === 'application/pdf') {
+      return { type: 'document', source: { type: 'file', file_id: att.fileId } };
+    }
+    return { type: 'image', source: { type: 'file', file_id: att.fileId } };
+  }
+  // Fallback: inline base64 (images only, small files)
   if (att.mediaType === 'application/pdf') {
     return { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: att.data } };
   }

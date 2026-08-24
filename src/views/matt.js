@@ -162,8 +162,10 @@ function appendMessage(role, text, att) {
   if (att) {
     if (att.mediaType === 'application/pdf') {
       inner += `<div class="bubble-attachment pdf">📄 ${esc(att.name)}</div>`;
-    } else {
+    } else if (att.data) {
       inner += `<img class="bubble-image" src="data:${att.mediaType};base64,${att.data}" alt="${esc(att.name)}">`;
+    } else {
+      inner += `<div class="bubble-attachment">🖼️ ${esc(att.name)}</div>`;
     }
   }
   if (text) inner += `<div class="bubble">${fmt(text)}</div>`;
