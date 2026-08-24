@@ -139,6 +139,12 @@ function initChatInput() {
       fileInput.value = '';
       return;
     }
+    // 10 MB limit — larger files cause mobile fetch failures
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File is too large (max 10 MB). Try a smaller image or a compressed PDF.');
+      fileInput.value = '';
+      return;
+    }
     try {
       var data = await readFileAsBase64(file);
       setPendingAttachment({ name: file.name, mediaType: file.type, data });
