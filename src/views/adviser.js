@@ -58,7 +58,10 @@ export async function sendAdviserMessage() {
     if (!att) callOpts.tools = [{ type: 'web_search_20260209', name: 'web_search' }];
     var data  = await callClaude(history, SYSTEM_PROMPT, callOpts);
     var reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
-    if (!reply) reply = '_(no text response — please try again)_';
+    if (!reply) {
+      var blockTypes = (data.content || []).map(function(b) { return b.type; }).join(', ') || 'none';
+      reply = '_No text response. stop_reason=' + (data.stop_reason || '?') + ' blocks=[' + blockTypes + ']_';
+    }
     thinking.remove();
     history.push({ role: 'assistant', content: data.content });
     appendMessage('assistant', reply);
