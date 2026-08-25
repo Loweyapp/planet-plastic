@@ -139,7 +139,9 @@ export async function sendMattMessage() {
       if (!att) mattOpts.tools = [{ type: 'web_search_20260209', name: 'web_search' }];
       var data = await callClaude(sessionHistory, buildSystemPrompt(), mattOpts);
       reply = data.content.filter(b => b.type === 'text').map(b => b.text).join('').trim();
-      if (!reply) reply = '_(no text response — please try again)_';
+      // Strip raw <invoke> tool-call blocks that sometimes leak into text content
+      reply = reply.replace(/<invoke[\s\S]*?<\/invoke>/g, '').trim();
+      if (!reply) reply = '_(no response — please try again)_';
       sessionHistory.push({ role: 'assistant', content: data.content });
     }
 
