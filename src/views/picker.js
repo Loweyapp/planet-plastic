@@ -51,8 +51,9 @@ Pick the single best kit from the stash for this mood and preferences. Return ON
 difficulty is 1–5 (1=easy, 5=expert). JSON only, no other text.`;
 
   try {
-    var data = await callClaude([{ role: 'user', content: prompt }], null, { maxTokens: 400 });
-    var raw  = data.content?.[0]?.text || '';
+    var data = await callClaude([{ role: 'user', content: prompt }], null, { maxTokens: 2000 });
+    var raw  = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    raw = raw.replace(/<invoke[\s\S]*?<\/invoke>/g, '').trim();
     var m    = raw.match(/\{[\s\S]*\}/);
     if (!m) throw new Error('No JSON in response');
     renderKitCard(JSON.parse(m[0]));
