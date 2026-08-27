@@ -111,9 +111,12 @@ service cloud.firestore {
 
 ## Feature backlog
 
-### Next to build
-- **Projects** — a project is a first-class object (not tied to a single kit). Has name, description, multiple linked kits, reference URLs, notes. Mobile-first capture. Lives in its own Firestore subcollection `users/{uid}/projects`.
-- **Build diaries** — chronological log per project: text + optional photo entries, timestamped, append-only. Sub-feature of Projects.
+### Next to build (hold — revisit when starting next kit build)
+- **Projects / per-kit workspace** — evaluate whether to build in-app or use Claude.ai threads once actively building a kit. In-app version would be: kit selected from stash, persistent per-project chat history (Firestore JSON), notes, paint checklist. PDF instruction storage needs Firebase Storage (new dependency — not trivial). Decision pending real-world use.
+- **Build diaries** — chronological log per project: text + optional photo entries, timestamped, append-only. Natural sub-feature of Projects if built.
+
+### Possible / exploratory
+- **Reference board** — Miro-style canvas per kit/project: upload reference images, add text notes, pin colour swatches. Useful for collecting painting reference, camouflage schemes, weathering inspiration. Key questions: storage (Firebase Storage needed for images), mobile UX (pan/zoom canvas is complex on touch), and whether this overlaps too much with just using a Pinterest board or Miro itself. Worth building only if the integration with inventory/chat adds genuine value over existing tools.
 
 ### Later
 - **Desktop layout** — wider view optimised for Alex's laptop desk mount in the modelling area. Large images, video-friendly. Build after Projects is solid.
